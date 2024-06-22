@@ -54,4 +54,9 @@ class Lead extends Model
         return $this->hasMany(LeadPayment::class);
     }
 
+    public function hasPccDocument()
+    {
+        return $this->documents()->where('doc_type', 'pcc')->exists();
+    }
+
 }

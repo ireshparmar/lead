@@ -131,9 +131,10 @@ return [
         'Hold'     => 'Hold'
     ],
     'leadDocType' => [
-        'Adhar Card' => 'Adhar Card',
-        'Passport' => 'Passport',
-        'Driving Licence' => 'Driving Licence'
+        'adharcard' => 'Adhar Card',
+        'passport' => 'Passport',
+        'drive_licence' => 'Driving Licence',
+        'pcc' => 'Pcc'
     ]
 
 ];

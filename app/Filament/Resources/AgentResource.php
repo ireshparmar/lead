@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AgentResource\Pages;
+use App\Filament\Resources\AgentResource\Pages\CreateAgent;
 use App\Filament\Resources\AgentResource\RelationManagers;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\Agent;
@@ -17,6 +18,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class AgentResource extends Resource
 {
@@ -44,15 +46,19 @@ class AgentResource extends Resource
                     ->password()
                     ->mutateDehydratedStateUsing(fn($state)=> Hash::make($state))
                     ->dehydrated(fn($state) => filled($state))
-                    ->required(fn(Page $livewire) => ($livewire instanceof CreateUser))
+                    ->required(fn(Page $livewire) => ($livewire instanceof CreateAgent))
                     ->maxLength(255),
                     Forms\Components\Select::make('status')
                     ->options([
                         'Active' => 'Active',
                         'Inactive' => 'Inactive'
-                    ])->preload(),
+                    ])->required()->preload(),
                 Forms\Components\Select::make('roles')
-                    ->relationship('roles','name')->preload(),
+                    ->relationship('roles','name',function($query){
+                        $query->where('name', 'Agent');
+                    }) ->default(function () {
+                        return Role::where('name', 'Agent')->first()->id ?? null; // Set the default to the first active role or null if none found
+                    })->preload(),
                 Forms\Components\Select::make('permissions')
                     ->multiple()
                     ->relationship('permissions','name')->preload(),

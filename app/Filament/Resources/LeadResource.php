@@ -27,6 +27,7 @@ use Illuminate\Validation\ValidationException;
 use Filament\Filament;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\Auth;
 
 class LeadResource extends Resource
 {
@@ -64,9 +65,13 @@ class LeadResource extends Resource
                             Forms\Components\Select::make('visa_type_id')
                                 ->relationship('visaType','name')
                                 ->required(),
+
+                                Forms\Components\Select::make('job_offer')
+                                ->options(['Yes'=>'Yes',
+                                'No'=>'No']),
                             Forms\Components\TextInput::make('amount')
                                  ->numeric()
-                                 ->inputMode('decimal'),
+                                 ->inputMode('decimal') ->visible(fn() => Auth::user()->hasRole('Admin')|| Auth::user()->hasRole('Staff')),
                             Forms\Components\Select::make('assigned_to')
                             ->label('Assigned To')
                             ->relationship(
@@ -75,7 +80,7 @@ class LeadResource extends Resource
                                 modifyQueryUsing: fn (Builder $query) => $query->whereHas('roles', function ($query) {
                                     $query->where('name', 'Staff');
                             }),
-                            ),
+                            ) ->visible(fn() => Auth::user()->hasRole('Admin')),
                             Forms\Components\Select::make('agent_id')
                             ->relationship(
                                 name: 'agent',
@@ -83,14 +88,10 @@ class LeadResource extends Resource
                                 modifyQueryUsing: fn (Builder $query) => $query->whereHas('roles', function ($query) {
                                     $query->where('name', 'Agent');
                              }),
-                            ),
+                            ) ->visible(fn() => Auth::user()->hasRole('Admin')),
 
                                 Forms\Components\Select::make('status')
-                                ->options([
-                                    'New'=>'New',
-                                    'Assigned'=>'Assigned',
-                                    'Canceled'=>'Canceled',
-                                    'Closed'=>'Closed'])
+                                ->options(config('app.leadStatus'))
                                 ->default('New')
                                 ->required(),
 
@@ -121,7 +122,7 @@ class LeadResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+                    ->columns([
                 Tables\Columns\TextColumn::make('full_name')
                     ->searchable()
                     ->sortable(),
@@ -145,6 +146,9 @@ class LeadResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('pcc')
+                ->getStateUsing(function ($record) {
+                    return $record->hasPccDocument() ? 'Yes' : 'No';
+                })
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('visaType.name')
@@ -154,11 +158,12 @@ class LeadResource extends Resource
                     ->label('Agent')
                     ->numeric()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable() ->visible(fn() => Auth::user()->hasRole('Admin')),
                 Tables\Columns\SelectColumn::make('assigned_to')
                     ->options(User::whereHas('roles', function ($query) {
                         $query->where('name', 'Staff');
                  })->pluck("name","id")->toArray())
+                 ->visible(fn() => Auth::user()->hasRole('Admin'))
                 ->updateStateUsing(function (Lead $record, $state) {
                         $record->assigned_to = $state;
                         $record->save();
@@ -180,6 +185,7 @@ class LeadResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id','desc')
             ->filters([
                 SelectFilter::make('visaType')->relationship('visaType', 'name', fn (Builder $query) => $query)->preload()->multiple(),
                 SelectFilter::make('status')->options(config('app.leadStatus'))->preload()->multiple()
@@ -188,6 +194,7 @@ class LeadResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()->visible(fn($record) => Auth::user()->hasRole('Admin') || $record->created_by ===  Auth::user()->id),
                     Action::make('payments')->form([
                         Repeater::make('payments')
                         ->label('')
@@ -247,7 +254,10 @@ class LeadResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->visible(function ()  {
+                       return Auth::user()->hasRole('Admin');
+                    }),
                 ]),
             ])
             ->modifyQueryUsing(function (Builder $query) {
@@ -263,7 +273,7 @@ class LeadResource extends Resource
                             ->orWhere('created_by','=', auth()->id());
                     });
                 }
-            }) ;
+            });
     }
 
     public static function getRelations(): array
