@@ -12,13 +12,16 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Spatie\Permission\Models\Permission;
+use App\Models\Permission;
 
 class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationGroup = 'Settings';
+
 
     public static function form(Form $form): Form
     {
