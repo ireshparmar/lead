@@ -13,6 +13,10 @@ class CreateLead extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['created_by'] = auth()->id();
+        if(auth()->user()->hasRole('Agent')){
+            $data['agent_id'] = auth()->id();
+        }
         return $data;
     }
+
 }

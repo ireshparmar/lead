@@ -106,7 +106,9 @@ class LeadResource extends Resource
                                                 ->name('Select File')
                                                 ->downloadable()
                                                 ->openable()
-                                                ->previewable(true),
+                                                ->previewable(true)
+                                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                                                ->preserveFilenames(),
                                                 Forms\Components\Select::make('doc_type')->name('type')
                                                 ->options(config('app.leadDocType'))
 

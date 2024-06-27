@@ -18,10 +18,13 @@ class EditLead extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeFill(array $data): array
+
+    protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['updated_by'] = auth()->id();
-
+        if(auth()->user()->hasRole('Agent')){
+            $data['agent_id'] = auth()->id();
+        }
         return $data;
     }
 

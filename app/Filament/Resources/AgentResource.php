@@ -14,6 +14,7 @@ use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -98,10 +99,18 @@ class AgentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                //  Tables\Actions\Action::make('addExpense')
-                //  ->label('Add Expense')
-                //  ->url(fn (User $record) => route('filament.admin.resources.expenses.create', $record)),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('addExpense')
+                    ->icon('heroicon-s-currency-rupee')
+                    ->label('Add Expense')
+                    ->url(fn (User $record) => route('filament.admin.resources.expenses.create', ['agent_id' => $record->id])),
+                    Tables\Actions\Action::make('addExpense')
+                    ->icon('heroicon-s-list-bullet')
+                    ->label('View Expenses')
+                    ->url(fn (User $record) => route('filament.admin.resources.expenses.index', ['agent_id' => $record->id])),
+                ])
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
