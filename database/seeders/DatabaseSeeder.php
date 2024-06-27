@@ -21,5 +21,7 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call(RolesSeeder::class);
         $this->call(ExpenseCategoriesSeeder::class);
+        $this->call(VisaTypeSeeder::class);
+
     }
 }
