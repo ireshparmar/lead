@@ -99,9 +99,9 @@ class AgentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                // Tables\Actions\Action::make('addExpense')
-                // ->label('Add Expense')
-                // ->url(fn (User $record) => route('filament.admin.resources.agents.add-expense', $record)),
+                //  Tables\Actions\Action::make('addExpense')
+                //  ->label('Add Expense')
+                //  ->url(fn (User $record) => route('filament.admin.resources.expenses.create', $record)),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -129,7 +129,7 @@ class AgentResource extends Resource
             'index' => Pages\ListAgents::route('/'),
             'create' => Pages\CreateAgent::route('/create'),
             'edit' => Pages\EditAgent::route('/{record}/edit'),
-            //'add-expense' => Pages\AddExpense::route('/{record}/add-expense'),
+          //  'add-expense' => Pages\AddExpense::route('/{record}/add-expense'),
 
         ];
     }

@@ -24,6 +24,8 @@ class ExpenseResource extends Resource
 
     protected static ?string $modelLabel = 'Expense';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form
