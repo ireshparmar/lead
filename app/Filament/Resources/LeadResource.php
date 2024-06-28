@@ -85,10 +85,16 @@ class LeadResource extends Resource
                             ->relationship(
                                 name: 'agent',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query) => $query->whereHas('roles', function ($query) {
-                                    $query->where('name', 'Agent');
-                             }),
-                            ) ->visible(fn() => Auth::user()->hasRole('Admin')),
+                                modifyQueryUsing: function (Builder $query, Model $record) {
+                                    if (Auth::user()->hasRole('Admin') && $record->agent_id == $record->created_by) {
+                                        $query->where('id', $record->agent_id);
+                                        //this condition is for to not allow Admin or other staff to change Agent, if lead is created by agent
+                                    }
+                                    $query->whereHas('roles', function ($query) use ($record) {
+                                        $query->where('name', 'Agent');
+
+                                    });
+                                })->visible(fn() => Auth::user()->hasRole('Admin')),
 
                                 Forms\Components\Select::make('status')
                                 ->options(config('app.leadStatus'))
