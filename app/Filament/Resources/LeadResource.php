@@ -106,12 +106,19 @@ class LeadResource extends Resource
                                                 ->name('Select File')
                                                 ->downloadable()
                                                 ->openable()
+                                                ->reactive()
                                                 ->previewable(true)
                                                 ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
-                                                ->preserveFilenames(),
+                                                ->preserveFilenames()
+                                                ->afterStateUpdated(function ($state, callable $get, callable $set, $record, $context) {
+                                                    $index = $context->getIndex();
+                                                    $set("documents.{$index}.doc_name", !empty($state));
+                                                })
+                                                ->required(),
                                                 Forms\Components\Select::make('doc_type')->name('type')
                                                 ->options(config('app.leadDocType'))
-
+                                                //->required(fn (callable $get) => !is_null($get('doc_name'))),
+                                                ->required()
                                             ])
                                             ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
                                                 $data['user_id'] = auth()->id();
