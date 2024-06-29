@@ -135,6 +135,6 @@ return [
         'passport' => 'Passport',
         'drive_licence' => 'Driving Licence',
         'pcc' => 'Pcc'
-    ]
+    ],
 
 ];

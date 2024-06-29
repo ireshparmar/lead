@@ -6,6 +6,7 @@ use App\Filament\Resources\LeadResource\Pages;
 use App\Filament\Resources\LeadResource\RelationManagers;
 use App\Models\Lead;
 use App\Models\User;
+use App\Notifications\LeadAssigned;
 use Carbon\Carbon;
 use Closure;
 use Filament\Forms;
@@ -25,6 +26,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Filament\Filament;
+use Filament\Livewire\DatabaseNotifications;
+use Filament\Notifications\Actions\Action as NotificationAction;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Auth;
@@ -182,11 +186,32 @@ class LeadResource extends Resource
                 ->updateStateUsing(function (Lead $record, $state) {
                         $record->assigned_to = $state;
                         $record->save();
+
                         if($state){
-                            Notification::make()
-                            ->title('Lead assigned')
-                            ->success()
-                            ->send();
+
+                            $recipient = User::find($state);
+
+                            // Create the data for the notification
+                            $data = [
+                                'message' => 'A lead has been assigned to you.'
+                            ];
+                         $resourceUrl = route('filament.admin.resources.leads.edit', $record->id);
+                         //   $recepient->notify(new LeadAssigned($data));
+                         Notification::make()
+                         ->title('A lead has been assigned to you.')
+                         ->actions([
+                            NotificationAction::make('view')
+                                    ->url($resourceUrl)
+                                    ->button()
+                                    ->markAsRead()
+                          ])
+                         ->sendToDatabase($recipient);
+
+                     event(new DatabaseNotificationsSent($recipient));
+
+
+
+
                         }
 
                 })
