@@ -128,13 +128,33 @@ return [
         'Assigned' => 'Assigned',
         'Completed' => 'Completed',
         'Canceled' => 'Canceled',
-        'Hold'     => 'Hold'
+        'Hold'     => 'Hold',
+        'Refund'   => 'Refund',
     ],
     'leadDocType' => [
         'adharcard' => 'Adhar Card',
         'passport' => 'Passport',
         'drive_licence' => 'Driving Licence',
-        'pcc' => 'Pcc'
+        'pcc' => 'Pcc',
+        'resume' => 'Resume',
+        '10th_mark_sheet' => '10th Mark Sheet',
+        '12th_mark_sheet' => '12th Mark Sheet',
+        '12th_credit_ceritificate' => '12th Credit Certificate',
+        'bachelor_mark_sheet' => "Bachelor's Mark Sheet + Degree Certificate",
+        'master_mark_sheet' => "Master's Mark Sheet + Degree Certificate",
+        'backlog_ceritificate' => "Backlog Certificate/No Backlog Ceritificate",
+        'transcript' => 'Transcript',
+        'letter_recomd' => 'Letter of Recommendation',
+        'med_instr' => 'Medium of Instruction',
+        'Ielts_sc_card' => 'IELTS Score Card',
+        'app_letter' => 'Appoinment Letter',
+        'salary_slip_3month' => 'Salary Slip (Last 3 Month)',
+        'salary_acc_state' => 'Salary Account Statement',
+        'other'  => 'Other'
+
+
     ],
+
+    'FILE_DISK' => env('FILESYSTEM_DISK')
 
 ];

@@ -1,5 +1,7 @@
 <?php
 
+use App\Filament\Pages\Dashboard;
+
 return [
 
     /*
@@ -85,5 +87,9 @@ return [
     */
 
     'livewire_loading_delay' => 'default',
+
+    'pages' => [
+        'register' => [],
+    ],
 
 ];

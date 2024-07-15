@@ -16,9 +16,11 @@ class LeadDoc extends Model
      */
     protected $fillable = [
         'doc_name',
+        'doc_org_name',
         'doc_type',
         'lead_id',
         'user_id',
         'mime_type',
+        'other_type'
     ];
 }

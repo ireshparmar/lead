@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LeadResource\Pages;
 use App\Filament\Resources\LeadResource\RelationManagers;
+use App\Filament\Resources\LeadResource\RelationManagers\LeadDocsRelationManager;
+use App\Filament\Resources\LeadResource\RelationManagers\LeadRemindersRelationManager;
 use App\Models\Lead;
 use App\Models\User;
 use App\Notifications\LeadAssigned;
@@ -26,6 +28,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Filament\Filament;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Textarea;
 use Filament\Livewire\DatabaseNotifications;
 use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
@@ -69,6 +74,9 @@ class LeadResource extends Resource
                             Forms\Components\Select::make('visa_type_id')
                                 ->relationship('visaType','name')
                                 ->required(),
+                            Forms\Components\Select::make('country_id')
+                                ->relationship('country','name')
+                                ->required(),
 
                                 Forms\Components\Select::make('job_offer')
                                 ->options(['Yes'=>'Yes',
@@ -103,39 +111,20 @@ class LeadResource extends Resource
 
                                 Forms\Components\Select::make('status')
                                 ->options(config('app.leadStatus'))
+                                ->live()
                                 ->default('New')
                                 ->required(),
+                                Forms\Components\TextInput::make('refund_amount')
+                                ->numeric()
+                                ->inputMode('decimal')
+                                ->default(null)
+                                ->hidden(fn (Get $get) => $get('status') !== 'Refund')
+                                ->requiredIf('status', 'Refund'),
 
-                            ])->columnSpan(1)->columns(2),
-                            Forms\Components\Section::make('Documents')
-                            ->schema([
-                                        Repeater::make('documents')
-                                            ->label('')
-                                            ->relationship()
-                                            ->schema([
-                                                Forms\Components\FileUpload::make('doc_name')
-                                                ->name('Select File')
-                                                ->downloadable()
-                                                ->openable()
-                                                ->reactive()
-                                                ->previewable(true)
-                                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
-                                                ->preserveFilenames()
-                                                ->afterStateUpdated(function ($state, callable $get, callable $set, $record, $context) {
-                                                    $index = $context->getIndex();
-                                                    $set("documents.{$index}.doc_name", !empty($state));
-                                                })
-                                                ->required(),
-                                                Forms\Components\Select::make('doc_type')->name('type')
-                                                ->options(config('app.leadDocType'))
-                                                //->required(fn (callable $get) => !is_null($get('doc_name'))),
-                                                ->required()
-                                            ])
-                                            ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
-                                                $data['user_id'] = auth()->id();
-                                                return $data;
-                                            })->defaultItems(0)->addActionLabel('Add Document'),
-                             ])->collapsed()->columnSpan(1)
+                            ])->columnSpan(2)->columns(2),
+
+
+
             ]);
     }
 
@@ -147,6 +136,10 @@ class LeadResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                    Tables\Columns\TextColumn::make('country.name')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -229,7 +222,8 @@ class LeadResource extends Resource
             ->defaultSort('id','desc')
             ->filters([
                 SelectFilter::make('visaType')->relationship('visaType', 'name', fn (Builder $query) => $query)->preload()->multiple(),
-                SelectFilter::make('status')->options(config('app.leadStatus'))->preload()->multiple()
+                SelectFilter::make('status')->options(config('app.leadStatus'))->preload()->multiple(),
+                SelectFilter::make('country')->relationship('country', 'name', fn (Builder $query) => $query)->preload()->multiple(),
 
             ])
             ->actions([
@@ -262,9 +256,11 @@ class LeadResource extends Resource
                                                         $totalPaid+=$item['amount'];
                                                     }
                                                 }
+                                                if(empty($lead->amount)){
+                                                    $fail('Please update amount in lead before adding payment detail.');
+                                                }
                                                 // Debugging to ensure values are correct
-
-                                                if ($totalPaid > $lead->amount) {
+                                                if ($totalPaid > $lead->amount && !empty($lead->amount)) {
                                                     $fail('The total payments exceed the total amount defined in the lead.');
                                                 }
                                             }
@@ -320,7 +316,9 @@ class LeadResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            LeadDocsRelationManager::class,
+            LeadRemindersRelationManager::class
+
         ];
     }
 

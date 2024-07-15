@@ -16,7 +16,9 @@ return new class extends Migration
             $table->foreignId("lead_id")->constrained("leads");
             $table->foreignId("user_id")->constrained("users")->comment("id of user who uploading document");
             $table->string("doc_name");
-            $table->string("doc_type",100)->comment("adharcard, passport, drive_licence, pcc");
+            $table->string("doc_org_name",255)->nullable();
+            $table->string("doc_type",255);
+            $table->string("other_type",255)->nullable();
             $table->string("mime_type")->comment("image,pdf,doc")->nullable();
             $table->timestamps();
         });

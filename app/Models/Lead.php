@@ -46,7 +46,7 @@ class Lead extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function documents(){
+    public function lead_docs(){
         return $this->hasMany(LeadDoc::class);
     }
 
@@ -56,7 +56,21 @@ class Lead extends Model
 
     public function hasPccDocument()
     {
-        return $this->documents()->where('doc_type', 'pcc')->exists();
+        return $this->lead_docs()->where('doc_type', 'pcc')->exists();
+    }
+
+    public function country(){
+        return $this->belongsToMany(Country::class,'lead_country'); //actually every lead has one country
+    }
+
+    public function lead_reminders(){
+        return $this->hasMany(LeadReminder::class);
+    }
+
+    public function scopeForMonth($query, $month, $year)
+    {
+        return $query->whereYear('created_at', $year)
+                     ->whereMonth('created_at', $month);
     }
 
 }
