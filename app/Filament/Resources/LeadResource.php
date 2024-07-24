@@ -2,15 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Imports\LeadImporter;
 use App\Filament\Resources\LeadResource\Pages;
+use App\Filament\Resources\LeadResource\Pages\ImportLead;
 use App\Filament\Resources\LeadResource\RelationManagers;
 use App\Filament\Resources\LeadResource\RelationManagers\LeadDocsRelationManager;
 use App\Filament\Resources\LeadResource\RelationManagers\LeadRemindersRelationManager;
+use App\Imports\LeadsImport;
+use App\Livewire\LeadImport;
 use App\Models\Lead;
 use App\Models\User;
 use App\Notifications\LeadAssigned;
 use Carbon\Carbon;
 use Closure;
+use Exception;
 use Filament\Forms;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
@@ -35,14 +40,22 @@ use Filament\Livewire\DatabaseNotifications;
 use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
+use Filament\Pages\Actions\Modal\Actions\ButtonAction;
+use Filament\Pages\Page;
+use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Actions\ModalAction;
+use Livewire\Component;
+use Livewire\Mechanisms\HandleComponents\ComponentContext;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LeadResource extends Resource
 {
     protected static ?string $model = Lead::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
 
     public static function form(Form $form): Form
     {
@@ -131,6 +144,18 @@ class LeadResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+                    ->headerActions([
+
+
+
+                        Action::make('Import')
+                        ->label('Import')
+                        ->url(ImportLead::getUrl())
+
+                        // ImportAction::make()
+                        //     ->importer(LeadImporter::class)
+
+                    ])
                     ->columns([
                 Tables\Columns\TextColumn::make('full_name')
                     ->searchable()
@@ -313,6 +338,8 @@ class LeadResource extends Resource
             });
     }
 
+
+
     public static function getRelations(): array
     {
         return [
@@ -328,6 +355,7 @@ class LeadResource extends Resource
             'index' => Pages\ListLeads::route('/'),
             'create' => Pages\CreateLead::route('/create'),
             'edit' => Pages\EditLead::route('/{record}/edit'),
+            'import-lead' =>Pages\ImportLead::route('/import-lead')
         ];
     }
 

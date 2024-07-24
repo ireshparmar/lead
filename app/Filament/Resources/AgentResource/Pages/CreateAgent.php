@@ -11,5 +11,11 @@ class CreateAgent extends CreateRecord
 {
     protected static string $resource = AgentResource::class;
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['email_verified_at'] = Carbon::now();
+
+        return $data;
+    }
 
 }
