@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignId("assigned_to")->nullable()->constrained("users");
             $table->foreignId("created_by")->constrained("users");
             $table->foreignId("updated_by")->nullable()->constrained("users");
+            $table->tinyInteger('is_imported')->default(0)->comment('1 for yes and 0 for no, use to identify that record is inserted through import');
             $table->timestamps();
             $table->softDeletes();
         });

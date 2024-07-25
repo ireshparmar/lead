@@ -29,7 +29,8 @@ class Lead extends Model
         'assigned_to',
         'created_by',
         'updated_by',
-        'amount'
+        'amount',
+        'is_imported'
 
 
     ];
