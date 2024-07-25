@@ -35,7 +35,7 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
+               // Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->mutateDehydratedStateUsing(fn($state)=> Hash::make($state))
@@ -59,9 +59,20 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('email_verified_at')
+                //     ->dateTime()
+                //     ->sortable(),
+                Tables\Columns\ToggleColumn::make('status')
+                    ->updateStateUsing(function (User $record, $state) {
+                                if($state){
+                                    $record->status = 'Active';
+                                } else {
+                                    $record->status = 'Inactive';
+                                }
+                                $record->save();
+                    })->getStateUsing( function (User $record){
+                        return $record->status == 'Active' ? 1 : 0;
+                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

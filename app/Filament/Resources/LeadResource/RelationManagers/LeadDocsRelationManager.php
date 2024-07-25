@@ -11,6 +11,7 @@ use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -55,6 +56,7 @@ class LeadDocsRelationManager extends RelationManager
                                 Forms\Components\FileUpload::make('doc_name')
                                 ->name('Select File')
                                 ->downloadable()
+                                ->directory(config('app.UPLOAD_DIR').'/leadDocs')
                                 ->openable()
                                 ->reactive()
                                 ->previewable(true)
@@ -130,6 +132,19 @@ class LeadDocsRelationManager extends RelationManager
             $data['user_id'] = auth()->user()->id;
 
             return $data;
+        });
+    }
+
+    protected function configureDeleteAction(DeleteAction $action): void
+    {
+        $action->after(function ($record) {
+
+            // Get the file path from the record
+            $filePath = $record->doc_name; // Adjust this to your actual file path attribute
+            // Check if the file exists and delete it
+            if (Storage::disk(config('app.FILE_DISK'))->exists($filePath)) {
+                Storage::disk(config('app.FILE_DISK'))->delete($filePath);
+            }
         });
     }
 }

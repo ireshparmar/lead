@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Exceptions\Halt;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,9 @@ class ImportLead extends Page implements HasForms
 
 
     public function form(Form $form) : Form {
+        //Run command to delete old import files
+        Artisan::call('app:delete-lead-import-files');
+
         if (Request::isMethod('post'))
         {
             session()->forget(['file']);
@@ -48,6 +52,7 @@ class ImportLead extends Page implements HasForms
         return  $form->schema([
             FileUpload::make('file')
                     ->label('Choose Excel File')
+                    ->directory(config('app.UPLOAD_DIR').'/tempImport')
                     ->acceptedFileTypes(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
                     ->validationMessages([
                         'mimetypes' => 'Invalid file type. Please upload .xls or .xlsx files',
@@ -72,7 +77,8 @@ class ImportLead extends Page implements HasForms
             Action::make('save')
                 ->label(__('Download Error'))
                 ->extraAttributes(['class' => 'p-2'])
-                ->url(Storage::url(session('file'))),
+                ->url(Storage::url(session('file')))
+                ->color('danger'),
         ];
     }
 
@@ -90,6 +96,7 @@ class ImportLead extends Page implements HasForms
 
 
             $data = $this->form->getState();
+
             $file = storage_path('app/public/'. $data['file']);
             //$import = Excel::import(new LeadsImport(), $file);
 
@@ -118,7 +125,7 @@ class ImportLead extends Page implements HasForms
                 ];
 
                 // Create the validation errors export
-                $path = 'lead-import-validation-errors-' . time() . '.xlsx';
+                $path = config('app.UPLOAD_DIR').'/tempImport/error/lead-import-validation-errors-' . time() . '.xlsx';
 
 
                 session(['file' => $path]);

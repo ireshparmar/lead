@@ -155,6 +155,7 @@ return [
 
     ],
 
-    'FILE_DISK' => env('FILESYSTEM_DISK')
+    'FILE_DISK' => env('FILESYSTEM_DISK'),
+    'UPLOAD_DIR' => 'uploads'
 
 ];
