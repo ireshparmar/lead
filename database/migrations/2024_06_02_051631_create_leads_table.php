@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
+            $table->string("lead_unique_id",255)->nullable();
             $table->string("full_name")->nullable();
             $table->string("email")->nullable();
             $table->string("phone")->nullable();
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->foreignId("created_by")->constrained("users");
             $table->foreignId("updated_by")->nullable()->constrained("users");
             $table->tinyInteger('is_imported')->default(0)->comment('1 for yes and 0 for no, use to identify that record is inserted through import');
+            $table->date('created_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

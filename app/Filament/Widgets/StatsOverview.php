@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Expense;
 use App\Models\Lead;
+use App\Models\LeadPayment;
 use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -27,6 +28,7 @@ class StatsOverview extends BaseWidget
         return [
             Stat::make('Total Leads', Lead::count())
             ->color('primary'),
+            Stat::make('Total Revenue', LeadPayment::sum('amount'))->color('gray'),
             Stat::make('Total Expenses', Expense::sum('amount'))->color('gray'),
             Stat::make('Total Agents', User::role('Agent')->count())->color('info'),
         ];

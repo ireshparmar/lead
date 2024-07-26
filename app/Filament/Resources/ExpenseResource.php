@@ -60,6 +60,16 @@ class ExpenseResource extends Resource
             )
             ->required();
         }
+        $schema[]= Forms\Components\FileUpload::make('doc_name')
+                   ->label('Files')
+                   ->directory(config('app.UPLOAD_DIR').'/expenses')
+                   ->multiple()
+                   ->downloadable()
+                   ->openable()
+                   ->reactive()
+                   ->previewable(true)
+                   ->storeFileNamesIn('doc_org_name')
+                   ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png']);
         return $form
             ->schema($schema);
     }

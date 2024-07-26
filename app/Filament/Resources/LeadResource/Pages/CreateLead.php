@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\LeadResource\Pages;
 
 use App\Filament\Resources\LeadResource;
+use App\Models\Lead;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Str;
 
 class CreateLead extends CreateRecord
 {
@@ -18,5 +20,6 @@ class CreateLead extends CreateRecord
         }
         return $data;
     }
-
 }
+
+

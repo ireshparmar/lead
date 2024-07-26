@@ -26,6 +26,11 @@ class LeadReminder extends Model
 
     ];
 
+    public function lead(){
+        return $this->hasOne(Lead::class,'id','lead_id');
+    }
+
+
     public function scopeUpcomingReminders($query)
     {
         $query->whereBetween('reminder_date_time', [Carbon::now(), Carbon::now()->addDays(20)]);

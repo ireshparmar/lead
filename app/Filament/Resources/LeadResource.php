@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Filament\Filament;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Textarea;
@@ -106,6 +107,7 @@ class LeadResource extends Resource
                                     $query->where('name', 'Staff');
                             }),
                             ) ->visible(fn() => Auth::user()->hasRole('Admin')),
+                            DatePicker::make('created_date')->required(),
                             Forms\Components\Select::make('agent_id')
                             ->relationship(
                                 name: 'agent',
@@ -157,6 +159,12 @@ class LeadResource extends Resource
 
                     ])
                     ->columns([
+                Tables\Columns\TextColumn::make('lead_unique_id')
+                    ->label('Lead Id')
+                    ->searchable()
+                    ->getStateUsing(function ($record) {
+                        return !empty($record->lead_unique_id) ? $record->lead_unique_id : '-';
+                    }),
                 Tables\Columns\TextColumn::make('full_name')
                     ->searchable()
                     ->sortable(),
@@ -180,6 +188,13 @@ class LeadResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
                     ->toggleable(),
+                    Tables\Columns\TextColumn::make('created_date')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable()
+                    ->getStateUsing(function ($record) {
+                        return !empty($record->created_date) ? $record->created_date : '-';
+                    }),
                 Tables\Columns\TextColumn::make('job_offer')
                     ->searchable()
                     ->toggleable(),
@@ -259,6 +274,7 @@ class LeadResource extends Resource
                         Repeater::make('payments')
                         ->label('')
                         ->relationship()
+                        ->maxItems(3)
                         ->schema([
                             Forms\Components\TextInput::make('amount')
                                  ->numeric()

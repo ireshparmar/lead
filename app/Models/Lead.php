@@ -16,6 +16,7 @@ class Lead extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'lead_unique_id',
         'full_name',
         'email',
         'phone',
@@ -30,7 +31,8 @@ class Lead extends Model
         'created_by',
         'updated_by',
         'amount',
-        'is_imported'
+        'is_imported',
+        'created_date'
 
 
     ];

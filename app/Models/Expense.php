@@ -10,12 +10,21 @@ class Expense extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'created_by',
+        'updated_by',
         'agent_id',
         'date',
         'amount',
         'category_id',
         'description',
+        'doc_name',
+        'doc_org_name'
+    ];
+
+    protected $casts = [
+        'doc_name' => 'array',
+        'doc_org_name' => 'array'
+
     ];
 
     public function user()
