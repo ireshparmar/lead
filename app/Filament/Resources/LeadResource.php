@@ -36,6 +36,7 @@ use Filament\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Livewire\DatabaseNotifications;
 use Filament\Notifications\Actions\Action as NotificationAction;
@@ -47,6 +48,9 @@ use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\ModalAction;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Support\HtmlString;
+use LaraZeus\Popover\Tables\PopoverColumn;
 use Livewire\Component;
 use Livewire\Mechanisms\HandleComponents\ComponentContext;
 use Maatwebsite\Excel\Facades\Excel;
@@ -130,11 +134,27 @@ class LeadResource extends Resource
                                 ->default('New')
                                 ->required(),
                                 Forms\Components\TextInput::make('refund_amount')
+                                ->label('Refund Amount')
                                 ->numeric()
                                 ->inputMode('decimal')
                                 ->default(null)
                                 ->hidden(fn (Get $get) => $get('status') !== 'Refund')
                                 ->requiredIf('status', 'Refund'),
+                                Forms\Components\Textarea::make('refund_reson')
+                                ->label('Refund Reason')
+                                ->default(null)
+                                ->hidden(fn (Get $get) => $get('status') !== 'Refund'),
+                                Forms\Components\FileUpload::make('refund_docs')
+                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                                ->multiple()
+                                ->downloadable()
+                                ->openable()
+                                ->previewable(false)
+                                ->preserveFilenames()
+                                ->directory(config('app.UPLOAD_DIR').'/leadDocs/refund')
+                                ->label('Refund Documents')
+                                ->hidden(fn (Get $get) => $get('status') !== 'Refund'),
+
 
                             ])->columnSpan(2)->columns(2),
 
@@ -184,6 +204,16 @@ class LeadResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('address')
                     ->searchable()
+                    ->toggleable(true),
+                PopoverColumn::make('Payments')
+                    ->label('Total Payments(₹)')
+                    ->getStateUsing(function ($record) {
+                        return $record->payments->sum('amount');
+                    })
+                    ->offset(10) // int px, for more: https://alpinejs.dev/plugins/anchor#offset
+                    ->popOverMaxWidth('none')
+                    ->content(fn($record) => view('filament.resources.lead-resource.payment-list', ['record' => $record]))
+                    ->trigger('hover')
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
@@ -193,7 +223,7 @@ class LeadResource extends Resource
                     ->toggleable()
                     ->sortable()
                     ->getStateUsing(function ($record) {
-                        return !empty($record->created_date) ? $record->created_date : '-';
+                        return !empty($record->created_date) ? Carbon::parse($record->created_date)->format('d M Y') : '-';
                     }),
                 Tables\Columns\TextColumn::make('job_offer')
                     ->searchable()
@@ -264,12 +294,44 @@ class LeadResource extends Resource
                 SelectFilter::make('visaType')->relationship('visaType', 'name', fn (Builder $query) => $query)->preload()->multiple(),
                 SelectFilter::make('status')->options(config('app.leadStatus'))->preload()->multiple(),
                 SelectFilter::make('country')->relationship('country', 'name', fn (Builder $query) => $query)->preload()->multiple(),
+                SelectFilter::make('payment_count')
+                ->label('Payment Count')
+                ->options(config('app.paymentFilter'))
+                ->query(function (Builder $query, array $data) {
+
+                    if (!empty($data['values'])) {
+                        $paymentCounts = array_map('intval', $data['values']);
+                        $query->whereHas('payments', function (Builder $query) use ($paymentCounts) {
+                            $query->havingRaw('COUNT(lead_payments.id) IN (' . implode(',', $paymentCounts) . ')');
+                        }, '>=', 1);
+
+                    }
+                })
+                ->preload()
+                ->multiple(),
+                SelectFilter::make('pcc')
+                              ->label('Pcc')
+                              ->options(['Yes'=>'Yes','No'=>'No'])
+                              ->query(function (Builder $query, array $data) {
+                                if (!empty($data['value'])) {
+                                    if($data['value'] == 'Yes'){
+                                        $query->whereHas('lead_docs', function (Builder $query) {
+                                            $query->where('doc_type', 'pcc');
+                                        });
+                                    } else {
+                                        $query->whereHas('lead_docs', function (Builder $query) {
+                                            $query->where('doc_type', '!=', 'pcc');
+                                        });
+                                    }
+                                }
+                              })
+
 
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make()->visible(fn($record) => Auth::user()->hasRole('Admin') || $record->created_by ===  Auth::user()->id),
+                    Tables\Actions\EditAction::make()->visible(!auth()->user()->hasRole('Agent')),
+                    Tables\Actions\DeleteAction::make()->visible(fn($record) => ((Auth::user()->hasRole('Admin') || $record->created_by ===  Auth::user()->id) && !auth()->user()->hasRole('Agent'))),
                     Action::make('payments')->form([
                         Repeater::make('payments')
                         ->label('')

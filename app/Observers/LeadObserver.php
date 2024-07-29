@@ -3,6 +3,10 @@
 namespace App\Observers;
 
 use App\Models\Lead;
+use App\Models\User;
+use Filament\Notifications\Actions\Action;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LeadObserver
@@ -16,6 +20,21 @@ class LeadObserver
         $randomString = 'NAND-'.$lead->id;
         $lead->lead_unique_id = $randomString;
         $lead->save();
+
+        $users = User::role('Admin')->get();
+        $resourceUrl = route('filament.admin.resources.leads.edit', $lead->id);
+        Notification::make()
+                         ->success()
+                         ->title('Lead created')
+                         ->body('The new lead has been created by agent ('.auth()->user()->name.').')
+                         ->actions([
+                            Action::make('view')
+                                    ->url($resourceUrl)
+                                    ->button()
+                                    ->markAsRead()
+                          ])
+                         ->sendToDatabase($users);
+
     }
 
     /**
@@ -23,7 +42,18 @@ class LeadObserver
      */
     public function updated(Lead $lead): void
     {
-        //
+        //Remove refund record and files if recorded is updated from Refund to any other status
+        if($lead->getOriginal('status') == 'Refund'){
+            if(!empty($lead->refund_docs)){
+
+                foreach($lead->refund_docs as $refundDoc ){
+                    Storage::disk(config('app.FILE_DISK'))->delete($refundDoc);
+                }
+                $lead->refund_reson = NULL;
+                $lead->refund_docs = NULL;
+                $lead->save();
+            }
+        }
     }
 
     /**

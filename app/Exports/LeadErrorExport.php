@@ -29,20 +29,36 @@ class LeadErrorExport implements FromCollection, WithHeadings, WithTitle
     {
         $data = [];
 
-        foreach ($this->failures as $failure) {
-            $row = ['Row' => $failure->row()]; // Initialize with row number
+        // Iterate over each failure
+foreach ($this->failures as $failure) {
+    $rowIndex = $failure->row(); // Get the row number
+    $columnName = $this->columnNames[$failure->attribute()] ?? $failure->attribute(); // Get the column name
+    $errorMessage = implode(', ', $failure->errors()); // Get the error message
+    $columnValue = $failure->values()[$failure->attribute()] ?? ''; // Get the value or default to empty
 
-            foreach ($this->attributes as $attribute) {
-                $value = $failure->values()[$attribute] ?? ''; // Get the value or default to empty
-                if ($attribute === $failure->attribute()) {
-                    $value .= ' - ' . implode(', ', $failure->errors()); // Append errors if in the same column
-                }
-                $row[$this->columnNames[$attribute] ?? $attribute] = $value; // Use defined column name
-            }
+    // Initialize the row if it doesn't exist
+    if (!isset($data[$rowIndex])) {
+        $data[$rowIndex] = ['Row' => $rowIndex];
 
-            $data[] = $row;
+        // Preserve existing data in columns
+        foreach ($this->attributes as $attribute) {
+            $attrColumnName = $this->columnNames[$attribute] ?? $attribute;
+            $data[$rowIndex][$attrColumnName] = $failure->values()[$attribute] ?? '';
         }
+    }
 
+    // Add the error to the corresponding column
+    if (isset($data[$rowIndex][$columnName])) {
+        // Append to existing error message if already set
+        $data[$rowIndex][$columnName] .= ' - ' . $errorMessage;
+    } else {
+        $data[$rowIndex][$columnName] = $columnValue . ' - ' . $errorMessage;
+    }
+}
+
+// Re-index the array to have a zero-based index for the rows
+$data = array_values($data);
+       // unset($data[0]);
         return new Collection($data);
     }
 

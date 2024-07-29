@@ -156,6 +156,11 @@ return [
     ],
 
     'FILE_DISK' => env('FILESYSTEM_DISK'),
-    'UPLOAD_DIR' => 'uploads'
+    'UPLOAD_DIR' => 'uploads',
+    'paymentFilter' => [
+        '1' => 'First Payment',
+        '2' => 'Second Payment',
+        '3' => 'Third Payment'
+    ]
 
 ];

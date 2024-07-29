@@ -83,11 +83,15 @@ class ImportLead extends Page implements HasForms
     }
 
     protected function downloadSampleFile():array{
+        $file = '/sample/Sample-Lead-Import.xlsx';
+        if(auth()->user()->hasRole('Agent')){
+            $file = '/sample/Sample-Lead-Import-Agent.xlsx';
+        }
         return [
             Action::make('save')
                 ->label(__('Sample Excel'))
                 ->extraAttributes(['class' => 'p-2'])
-                ->url('/sample/Sample-Lead-Import.xlsx'),
+                ->url($file),
         ];
     }
 
@@ -112,7 +116,8 @@ class ImportLead extends Page implements HasForms
                             ->send();
             } catch (\Maatwebsite\Excel\Validators\ValidationException $e){
                 $failures = $e->failures();
-                $attributes = ['full_name','email', 'phone', 'passport_no', 'job_offer', 'visa_type', 'amount', 'agent_email']; // Adjust these as needed
+
+                $attributes = ['full_name','email', 'phone', 'passport_no', 'job_offer', 'visa_type', 'amount', 'agent_email', 'created_date']; // Adjust these as needed
                 $columnNames = [
                     'full_name' => 'Name',
                     'email' => 'Email',
@@ -121,8 +126,13 @@ class ImportLead extends Page implements HasForms
                     'job_offer' => 'Job Offer',
                     'visa_type' => 'Visa Type',
                     'amount' => 'Amount',
-                    'agent_email' => 'Agent Email'
+                    'agent_email' => 'Agent Email',
+                    'created_date' => 'Created Date'
                 ];
+                if(auth()->user()->hasRole('Agent')){
+                    unset($attributes[6],$attributes[7]);
+                    unset($columnNames['amount'],$columnNames['agent_email']);
+                }
 
                 // Create the validation errors export
                 $path = config('app.UPLOAD_DIR').'/tempImport/error/lead-import-validation-errors-' . time() . '.xlsx';

@@ -31,7 +31,7 @@ class DeleteLeadImportFiles extends Command
         $directory = 'uploads/tempImport';
         $thresholdDate = Carbon::now()->subDays(2);
         // Retrieve all files from the directory recursively
-        $files = Storage::disk('public')->allFiles($directory);
+        $files = Storage::disk(config('app.FILE_DISK'))->allFiles($directory);
 
         // Loop through each file
         collect($files)->each(function ($filePath) use ($thresholdDate) {

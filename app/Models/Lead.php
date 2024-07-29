@@ -32,9 +32,15 @@ class Lead extends Model
         'updated_by',
         'amount',
         'is_imported',
-        'created_date'
+        'created_date',
+        'refund_amount',
+        'refund_reson',
+        'refund_docs'
 
 
+    ];
+    protected $casts = [
+        'refund_docs' => 'array',
     ];
 
     public function visaType(){

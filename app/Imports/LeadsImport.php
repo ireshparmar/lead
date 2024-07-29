@@ -10,6 +10,7 @@ use App\Rules\checkAgent;
 use App\Rules\checkCountry;
 use App\Rules\checkVisaType;
 use App\Rules\uniqueEmail;
+use Carbon\Carbon;
 use Filament\Tables\Columns\Summarizers\Count;
 use Illuminate\Support\Collection;
 use Illuminate\Support\MessageBag;
@@ -24,6 +25,8 @@ use Illuminate\Validation\ValidationException as IlluminateValidationException;
 use Maatwebsite\Excel\Validators\ValidationException as ExcelValidationException;
 use Illuminate\Validation\ValidationException as LaravelValidationException;
 use Maatwebsite\Excel\Validators\Failure;
+use Illuminate\Support\Str;
+
 
 class LeadsImport implements ToCollection, WithHeadingRow, PersistRelations, WithValidation
 {
@@ -88,23 +91,25 @@ class LeadsImport implements ToCollection, WithHeadingRow, PersistRelations, Wit
             );
         }
 
-
-
         foreach ($rows as $row)
         {
-            $agent = $this->agents->where('email',$row['agent_email'])->first();
+            if(isset($row['agent_email']) && !empty($row['agent_email'])){
+                $agent = $this->agents->where('email',$row['agent_email'])->first();
+
+            }
             $lead = Lead::create([
                 'full_name' => $row['full_name'],
                 'email' => $row['email'],
-                'phone' => $row['phone'],
+                'phone' => !Str::contains($row['phone'],'+') ? '+'.$row['phone'] : $row['phone'],
                 'passport_no' => $row['passport_no'],
                 'address' => $row['address'],
                 'job_offer' => $row['job_offer'],
                 'visa_type_id' => $this->visaTypes[ucfirst($row['visa_type'])] ?? NULL,
-                'amount' => $row['amount'],
+                'amount' => $row['amount'] ?? NULL,
                 'agent_id' => $agent->id ?? NULL,
                 'created_by' => auth()->user()->id,
-                'is_imported' => 1
+                'is_imported' => 1,
+                'created_date' => $row['created_date']
             ]);
             $lead->country()->detach();
             $lead->country()->attach($this->countries[ucfirst($row['country'])]);
@@ -113,23 +118,28 @@ class LeadsImport implements ToCollection, WithHeadingRow, PersistRelations, Wit
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'full_name' => ['required'],
             'email' => ['required','email','unique:leads,email,NULL,id,deleted_at,NULL'],
             'phone' => ['required'],
             'country' => ['required',new checkCountry],
             'visa_type' => ['required',new checkVisaType],
-            'agent_email' => ['nullable', new checkAgent],
             'job_offer' => ['required','in:Yes,No'],
-            'amount'    => ['nullable','numeric']
+            'created_date' => ['required','date_format:Y-m-d']
         ];
+        if(!auth()->user()->hasRole('Agent')){
+            $rules['agent_email'] = ['nullable', new checkAgent];
+            $rules['amount']    = ['nullable','numeric'];
+        }
+        return $rules;
     }
 
     public function prepareForValidation($data, $index)
     {
+
         $data['job_offer'] = ucfirst($data['job_offer']);
         $data['visa_type'] = ucfirst($data['visa_type']);
-
+        $data['created_date'] = !empty($data['created_date']) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data['created_date']))->format('Y-m-d') : '';
         return $data;
     }
 }

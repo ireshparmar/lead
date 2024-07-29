@@ -69,6 +69,6 @@ class AdminPanelProvider extends PanelProvider
                 FilamentApexChartsPlugin::make(),
                // \Hasnayeen\Themes\ThemesPlugin::make()
             ])
-            ->databaseNotificationsPolling(null);
+            ->databaseNotificationsPolling('30s');
     }
 }
