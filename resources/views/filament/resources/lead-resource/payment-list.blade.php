@@ -49,7 +49,7 @@
     }
 </style>
 
-
+@if($record->payments)
 <div class="larazeus-popover-content">
     @foreach ($record->payments as $payment)
         <div class="payment-detail">
@@ -61,3 +61,4 @@
 
 
 </div>
+@endif

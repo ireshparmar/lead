@@ -212,7 +212,11 @@ class LeadResource extends Resource
                     })
                     ->offset(10) // int px, for more: https://alpinejs.dev/plugins/anchor#offset
                     ->popOverMaxWidth('none')
-                    ->content(fn($record) => view('filament.resources.lead-resource.payment-list', ['record' => $record]))
+                    ->content(function($record){
+                        if(count($record->payments)){
+                            return view('filament.resources.lead-resource.payment-list', ['record' => $record]);
+                        }
+                    })
                     ->trigger('hover')
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
@@ -295,7 +299,7 @@ class LeadResource extends Resource
                 SelectFilter::make('status')->options(config('app.leadStatus'))->preload()->multiple(),
                 SelectFilter::make('country')->relationship('country', 'name', fn (Builder $query) => $query)->preload()->multiple(),
                 SelectFilter::make('payment_count')
-                ->label('Payment Count')
+                ->label('Payment')
                 ->options(config('app.paymentFilter'))
                 ->query(function (Builder $query, array $data) {
 
