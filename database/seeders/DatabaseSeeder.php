@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\EducationLevel;
 use App\Models\Intakemonth;
 use App\Models\Intakeyear;
 use App\Models\User;
@@ -30,9 +31,7 @@ class DatabaseSeeder extends Seeder
         $this->call(IntakeMonthSeeder::class);
         $this->call(PurposeSeeder::class);
         $this->call(ServiceSeeder::class);
-
-
-
-
+        $this->call(EducationLevelSeeder::class);
+        $this->call(DurationSeeder::class);
     }
 }

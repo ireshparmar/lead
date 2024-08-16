@@ -17,15 +17,17 @@ class City extends Model
         'state_id'
     ];
 
-    public function country(){
+    public function country()
+    {
         return $this->belongsTo(Country::class);
     }
 
-    public function state(){
+    public function state()
+    {
         return $this->belongsTo(State::class);
     }
 
-     /**
+    /**
      * The "booted" method of the model.
      *
      * @return void
@@ -34,12 +36,22 @@ class City extends Model
     {
         static::addGlobalScope('specificCountries', function (Builder $builder) {
             $specificCountries = [
-                'AU','CA','HR','FI','DE','HU','LV','LT','PL','RU'
+                'AU',
+                'CA',
+                'HR',
+                'FI',
+                'DE',
+                'HU',
+                'LV',
+                'LT',
+                'PL',
+                'RU',
+                'IN'
             ];
-            $builder->whereIn('country_code', $specificCountries)->whereHas('state',function($q){
-                $q->where('status','Active');
-            })->whereHas('country',function($q){
-                $q->where('status','Active');
+            $builder->whereIn('country_code', $specificCountries)->whereHas('state', function ($q) {
+                $q->where('status', 'Active');
+            })->whereHas('country', function ($q) {
+                $q->where('status', 'Active');
             });
         });
     }

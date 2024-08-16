@@ -18,11 +18,12 @@ class State extends Model
         'iso2',
     ];
 
-    public function country(){
+    public function country()
+    {
         return $this->belongsTo(Country::class);
     }
 
-     /**
+    /**
      * The "booted" method of the model.
      *
      * @return void
@@ -31,10 +32,20 @@ class State extends Model
     {
         static::addGlobalScope('specificCountries', function (Builder $builder) {
             $specificCountries = [
-                'AU','CA','HR','FI','DE','HU','LV','LT','PL','RU'
+                'AU',
+                'CA',
+                'HR',
+                'FI',
+                'DE',
+                'HU',
+                'LV',
+                'LT',
+                'PL',
+                'RU',
+                'IN'
             ];
-            $builder->whereIn('country_code', $specificCountries)->whereHas('country',function($q){
-                $q->where('status','Active');
+            $builder->whereIn('country_code', $specificCountries)->whereHas('country', function ($q) {
+                $q->where('status', 'Active');
             })->orderBy('country_code');
         });
     }

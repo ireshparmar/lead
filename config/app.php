@@ -161,6 +161,19 @@ return [
         '1' => 'First Payment',
         '2' => 'Second Payment',
         '3' => 'Third Payment'
+    ],
+    'gender' => [
+        'Male' => 'Male',
+        'Female' => 'Female',
+        'Transgender'  => 'Transgender'
+    ],
+    'educationStatus' => [
+        'Completed' => 'Completed',
+        'In Process' => 'In Process'
+    ],
+    'verifiedStatus' => [
+        'Verified' => 'Verified',
+        'Unverified' => 'Unverified'
     ]
 
 ];

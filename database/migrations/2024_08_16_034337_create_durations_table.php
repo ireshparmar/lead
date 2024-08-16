@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('durations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purpose_id')->nullable()->constrained("purposes")->cascadeOnDelete();
-            $table->string('service_name', 255);
+            $table->string('name')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->foreignId('created_by')->nullable()->constrained("users")->cascadeOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained("users")->cascadeOnDelete();
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('durations');
     }
 };

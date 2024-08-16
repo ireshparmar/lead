@@ -17,11 +17,12 @@ class Country extends Model
         'currency'
     ];
 
-    public function lead(){
-        return $this->belongsToMany(Lead::class,'lead_country');
+    public function lead()
+    {
+        return $this->belongsToMany(Lead::class, 'lead_country');
     }
 
-     /**
+    /**
      * The "booted" method of the model.
      *
      * @return void
@@ -30,7 +31,17 @@ class Country extends Model
     {
         static::addGlobalScope('specificCountries', function (Builder $builder) {
             $specificCountries = [
-                'AU','CA','HR','FI','DE','HU','LV','LT','PL','RU'
+                'AU',
+                'CA',
+                'HR',
+                'FI',
+                'DE',
+                'HU',
+                'LV',
+                'LT',
+                'PL',
+                'RU',
+                'IN'
             ];
             $builder->whereIn('iso2', $specificCountries);
         });

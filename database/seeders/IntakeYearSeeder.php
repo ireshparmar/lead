@@ -15,6 +15,8 @@ class IntakeYearSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $data = [
             [
                 'inyear_name' => "2024",
@@ -32,8 +34,10 @@ class IntakeYearSeeder extends Seeder
         ];
 
         $dataCnt = DB::table('intakeyears')->count();
-        if($dataCnt == 0) {
+        if ($dataCnt == 0) {
             Intakeyear::insert($data);
         }
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

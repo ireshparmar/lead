@@ -15,6 +15,8 @@ class InquirySourceSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         $sources = [
             [
@@ -44,8 +46,10 @@ class InquirySourceSeeder extends Seeder
         ];
 
         $sourcesCnt = DB::table('inquiry_sources')->count();
-        if($sourcesCnt == 0) {
+        if ($sourcesCnt == 0) {
             InquirySource::insert($sources);
         }
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

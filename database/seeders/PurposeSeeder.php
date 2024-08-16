@@ -15,6 +15,8 @@ class PurposeSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $data = [
             [
                 'purpose_name' => "Study Abroad",
@@ -50,8 +52,10 @@ class PurposeSeeder extends Seeder
         ];
 
         $dataCnt = DB::table('purposes')->count();
-        if($dataCnt == 0) {
+        if ($dataCnt == 0) {
             Purpose::insert($data);
         }
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

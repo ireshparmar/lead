@@ -16,8 +16,10 @@ class ServiceSeeder extends Seeder
      */
     public function run(): void
     {
-            $purposes = Purpose::pluck('id','purpose_name')->toArray();
-            $data = [
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $purposes = Purpose::pluck('id', 'purpose_name')->toArray();
+        $data = [
             [
                 'purpose_id'   => $purposes['Study Abroad'],
                 'service_name' => "Student Visa",
@@ -92,8 +94,10 @@ class ServiceSeeder extends Seeder
         ];
 
         $dataCnt = DB::table('services')->count();
-        if($dataCnt == 0) {
+        if ($dataCnt == 0) {
             Service::insert($data);
         }
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

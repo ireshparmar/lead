@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Intakemonth;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class IntakeMonthSeeder extends Seeder
+class DurationSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,31 +16,36 @@ class IntakeMonthSeeder extends Seeder
     {
         // Disable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        $data = [
+
+        // Data to be seeded
+        $durations = [
             [
-                'inmonth_name' => "Jan/Feb/Mar",
-                'status' => 'Active',
+                'name' => '1 Year',
+                'created_at' => Carbon::now(),
                 'created_by' => 1,
-                'created_at' => Carbon::now()
             ],
             [
-                'inmonth_name' => "June/July/Aug",
-                'status' => 'Active',
+                'name' => '2 Year',
+                'created_at' => Carbon::now(),
                 'created_by' => 1,
-                'created_at' => Carbon::now()
             ],
             [
-                'inmonth_name' => "Oct/Nov/Dec",
-                'status' => 'Active',
+                'name' => '3 Year',
+                'created_at' => Carbon::now(),
                 'created_by' => 1,
-                'created_at' => Carbon::now()
             ],
+
+            [
+                'name' => '4 Year',
+                'created_at' => Carbon::now(),
+                'created_by' => 1,
+            ],
+
         ];
 
-        $dataCnt = DB::table('intakemonths')->count();
-        if ($dataCnt == 0) {
-            Intakemonth::insert($data);
-        }
+        // Insert data
+        DB::table('durations')->insert($durations);
+
         // Re-enable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }

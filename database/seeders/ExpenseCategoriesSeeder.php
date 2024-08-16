@@ -13,6 +13,8 @@ class ExpenseCategoriesSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $categories = [
             ['name' => 'Travel'],
             ['name' => 'Accommodation'],
@@ -27,5 +29,7 @@ class ExpenseCategoriesSeeder extends Seeder
         ];
         DB::table('expense_categories')->truncate();
         DB::table('expense_categories')->insert($categories);
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

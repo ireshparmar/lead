@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('inquiry_sources', function (Blueprint $table) {
             $table->id();
-            $table->string('insource_name',255);
-            $table->enum('status',['Active','Inactive'])->default('Active');
+            $table->string('insource_name', 255);
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->foreignId('created_by')->nullable()->constrained("users")->cascadeOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained("users")->cascadeOnDelete();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
