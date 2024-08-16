@@ -18,7 +18,7 @@ class StudentAptitudeEntranceTest extends Model
      */
     protected $fillable = [
         'student_id',
-        'name',
+        'enterance_exam_id',
         'test_center',
         'test_date',
         'expire_date',
@@ -48,6 +48,13 @@ class StudentAptitudeEntranceTest extends Model
             $model->updated_by = Auth::id();
         });
     }
+
+
+    public function enteranceExam(): BelongsTo
+    {
+        return $this->belongsTo(EnteranceExam::class);
+    }
+
 
     /**
      * Get the student that owns the entrance test.

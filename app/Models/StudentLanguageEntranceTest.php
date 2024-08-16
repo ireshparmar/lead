@@ -18,7 +18,7 @@ class StudentLanguageEntranceTest extends Model
      */
     protected $fillable = [
         'student_id',
-        'name',
+        'enterance_exam_id',
         'test_center',
         'test_date',
         'expire_date',
@@ -48,6 +48,12 @@ class StudentLanguageEntranceTest extends Model
         static::updating(function ($model) {
             $model->updated_by = Auth::id();
         });
+    }
+
+
+    public function enteranceExam(): BelongsTo
+    {
+        return $this->belongsTo(EnteranceExam::class);
     }
 
     /**

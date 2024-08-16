@@ -36,7 +36,7 @@ class StudentEducationLevelsRelationManager extends RelationManager
         return $form
             ->schema([
                 Select::make('education_level_id')
-                    ->relationship('educationLevel', 'name')
+                    ->relationship('educationLevel', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                     ->required()
                     ->label('Education Level'),
                 Select::make('status')
@@ -61,7 +61,7 @@ class StudentEducationLevelsRelationManager extends RelationManager
                     ->reactive(),
 
                 Select::make('duration_id')
-                    ->relationship('duration', 'name')
+                    ->relationship('duration', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                     ->required()
                     ->label('Duration')
                     ->reactive(),

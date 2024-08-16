@@ -33,5 +33,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ServiceSeeder::class);
         $this->call(EducationLevelSeeder::class);
         $this->call(DurationSeeder::class);
+        $this->call(EntranceExamSeeder::class);
     }
 }

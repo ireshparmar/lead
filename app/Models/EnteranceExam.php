@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Intakemonth extends Model
+class EnteranceExam extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'inmonth_name',
+        'name',
         'status',
+        'type',
         'created_by',
         'updated_by',
     ];
@@ -29,5 +28,9 @@ class Intakemonth extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'Active');
+    }
+    public function scopeType($query, $type)
+    {
+        return $query->where('type', $type);
     }
 }

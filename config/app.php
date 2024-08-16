@@ -174,6 +174,10 @@ return [
     'verifiedStatus' => [
         'Verified' => 'Verified',
         'Unverified' => 'Unverified'
+    ],
+    'enterancExamType' => [
+        'Language' => 'Language',
+        'Aptitude' => 'Aptitude'
     ]
 
 ];

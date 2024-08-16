@@ -29,10 +29,9 @@ class StudentAptitudeEntranceTestRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Test Name')
-                    ->required()
-                    ->maxLength(255),
+                Select::make('enterance_exam_id')
+                    ->relationship('enteranceExam', 'name', modifyQueryUsing: fn(Builder $query) => $query->active()->type('Aptitude'))
+                    ->required(),
 
                 Forms\Components\TextInput::make('test_center')
                     ->label('Test Center')
@@ -86,9 +85,10 @@ class StudentAptitudeEntranceTestRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('enteranceExam.name')
                     ->label('Test Name')
-                    ->sortable()->toggleable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('test_center')
                     ->label('Test Center')

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('verified_by')->nullable()->constrained("users")->cascadeOnDelete();
             $table->timestamp('verified_date')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

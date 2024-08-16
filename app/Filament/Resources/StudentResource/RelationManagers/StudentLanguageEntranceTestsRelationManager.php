@@ -32,10 +32,9 @@ class StudentLanguageEntranceTestsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Test Name')
-                    ->required()
-                    ->maxLength(255),
+                Select::make('enterance_exam_id')
+                    ->relationship('enteranceExam', 'name', modifyQueryUsing: fn(Builder $query) => $query->active()->type('Language'))
+                    ->required(),
 
                 TextInput::make('test_center')
                     ->label('Test Center')
@@ -93,7 +92,7 @@ class StudentLanguageEntranceTestsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('enteranceExam.name')
                     ->label('Test Name')
                     ->sortable()
                     ->toggleable(),

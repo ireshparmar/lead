@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('student_language_entrance_tests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->nullable()->constrained("students")->cascadeOnDelete();
-            $table->string('name')->nullable();
+            $table->foreignId('enterance_exam_id')->nullable()->constrained("enterance_exams")->cascadeOnDelete();
             $table->string('test_center')->nullable();
             $table->date('test_date')->nullable();
             $table->date('expire_date')->nullable();

@@ -97,7 +97,7 @@ class StudentResource extends Resource
                             ->unique(ignoreRecord: true),
                         Forms\Components\Select::make('inquiry_source_id')
                             ->label('Inquiry Source')
-                            ->relationship('inquirySource', 'insource_name')->required(),
+                            ->relationship('inquirySource', 'insource_name', modifyQueryUsing: fn(Builder $query) => $query->active())->required(),
                         Forms\Components\TextInput::make('address')
                             ->label('Address')->required(),
                         Forms\Components\TextInput::make('postal_code')
@@ -160,7 +160,7 @@ class StudentResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('purpose_id')
                             ->label('Purpose')
-                            ->relationship('purpose', 'purpose_name')
+                            ->relationship('purpose', 'purpose_name', modifyQueryUsing: fn(Builder $query) => $query->active())
                             ->required()
                             ->reactive()
                             ->afterStateUpdated(function (callable $set) {
@@ -177,7 +177,7 @@ class StudentResource extends Resource
                                 $purposeId = $get('purpose_id');
 
                                 if ($purposeId) {
-                                    return \App\Models\Service::where('purpose_id', $purposeId)->pluck('service_name', 'id');
+                                    return \App\Models\Service::where('purpose_id', $purposeId)->where('status', 'Active')->pluck('service_name', 'id');
                                 }
 
                                 return [];
