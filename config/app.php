@@ -178,6 +178,18 @@ return [
     'enterancExamType' => [
         'Language' => 'Language',
         'Aptitude' => 'Aptitude'
+    ],
+    'docTypeType' => [
+        'Compulsory' => 'Compulsory',
+        'Optional' => 'Optional',
+    ],
+    'docTypeModule' => [
+        'General' => 'General',
+        'Student' => 'Student',
+    ],
+    'status'  => [
+        'Active' => 'Active',
+        'Inactive' => 'Inactive',
     ]
 
 ];

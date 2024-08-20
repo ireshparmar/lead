@@ -32,16 +32,16 @@ class IntakeYearResource extends Resource
         return $form
             ->schema([
                 TextInput::make('inmonth_name')
-                ->label('Year')
-                ->unique(ignoreRecord:true)
-                ->required(),
-            Select::make('status')
-                ->label('Status')
-                ->options([
-                    'Active' => 'Active',
-                    'Inactive' => 'Inactive',
-                ])
-                ->required(),
+                    ->label('Year')
+                    ->unique(ignoreRecord: true)
+                    ->required(),
+                Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'Active' => 'Active',
+                        'Inactive' => 'Inactive',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -54,20 +54,17 @@ class IntakeYearResource extends Resource
                     $status = $state ? 'Active' : 'Inactive';
                     $record->status = $status;
                     $record->save();
-                })->getStateUsing( function (Intakeyear $record){
+                })->getStateUsing(function (Intakeyear $record) {
                     return $record->status == 'Active' ? 1 : 0;
-                 }),
+                }),
                 Tables\Columns\TextColumn::make('createdBy.name')->label('Created By')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('updatedBy.name')->label('Updated By')->sortable()->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ]),
-            ]) ->actions([
+                    ->options(config('app.status')),
+            ])->actions([
                 Tables\Actions\EditAction::make(),
             ]);
     }

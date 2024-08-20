@@ -31,14 +31,11 @@ class InquirySourceResource extends Resource
             ->schema([
                 TextInput::make('insource_name')
                     ->label('Inquiry Source Name')
-                    ->unique(ignoreRecord:true)
+                    ->unique(ignoreRecord: true)
                     ->required(),
                 Select::make('status')
                     ->label('Status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ])
+                    ->options(config('app.status'))
                     ->required(),
 
             ]);
@@ -53,19 +50,16 @@ class InquirySourceResource extends Resource
                     $status = $state ? 'Active' : 'Inactive';
                     $record->status = $status;
                     $record->save();
-                })->getStateUsing( function (InquirySource $record){
+                })->getStateUsing(function (InquirySource $record) {
                     return $record->status == 'Active' ? 1 : 0;
-                 }),
+                }),
                 Tables\Columns\TextColumn::make('createdBy.name')->label('Created By')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('updatedBy.name')->label('Updated By')->sortable()->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ]),
+                    ->options(config('app.status')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

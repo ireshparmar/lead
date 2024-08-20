@@ -32,16 +32,13 @@ class IntakeMonthResource extends Resource
         return $form
             ->schema([
                 TextInput::make('inmonth_name')
-                ->label('Month')
-                ->unique(ignoreRecord:true)
-                ->required(),
-            Select::make('status')
-                ->label('Status')
-                ->options([
-                    'Active' => 'Active',
-                    'Inactive' => 'Inactive',
-                ])
-                ->required(),
+                    ->label('Month')
+                    ->unique(ignoreRecord: true)
+                    ->required(),
+                Select::make('status')
+                    ->label('Status')
+                    ->options(config('app.status'))
+                    ->required(),
             ]);
     }
 
@@ -54,19 +51,16 @@ class IntakeMonthResource extends Resource
                     $status = $state ? 'Active' : 'Inactive';
                     $record->status = $status;
                     $record->save();
-                })->getStateUsing( function (Intakemonth $record){
+                })->getStateUsing(function (Intakemonth $record) {
                     return $record->status == 'Active' ? 1 : 0;
-                 }),
+                }),
                 Tables\Columns\TextColumn::make('createdBy.name')->label('Created By')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('updatedBy.name')->label('Updated By')->sortable()->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ]),
+                    ->options(config('app.status')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

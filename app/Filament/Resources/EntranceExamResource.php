@@ -35,10 +35,7 @@ class EntranceExamResource extends Resource
                     ->required(),
 
                 Forms\Components\Select::make('status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ])
+                    ->options(config('app.status'))
                     ->default('Active')
                     ->required()
 
@@ -64,10 +61,7 @@ class EntranceExamResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ]),
+                    ->options(config('app.status')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -30,10 +30,7 @@ class DurationResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('status')
                     ->label('Status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ])
+                    ->options(config('app.status'))
                     ->required(),
             ]);
     }
@@ -56,10 +53,7 @@ class DurationResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                    ]),
+                    ->options(config('app.status')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
