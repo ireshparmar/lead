@@ -173,7 +173,9 @@ return [
     ],
     'verifiedStatus' => [
         'Verified' => 'Verified',
-        'Unverified' => 'Unverified'
+        'Unverified' => 'Unverified',
+        'Reupload' => 'Reupload',
+
     ],
     'enterancExamType' => [
         'Language' => 'Language',

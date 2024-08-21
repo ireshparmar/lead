@@ -116,6 +116,7 @@ class StudentLanguageEntranceTestsRelationManager extends RelationManager
                     ->color(fn(string $state): string => match ($state) {
                         'Verified' => 'success',
                         'Unverified' => 'danger',
+                        'Reupload' => 'info',
                         default => 'gray',
                     })
                     ->badge()

@@ -118,4 +118,9 @@ class Student extends Model
     {
         return $this->hasMany(StudentWorkExperience::class);
     }
+
+    public function studentDocuments()
+    {
+        return $this->hasMany(StudentDocument::class);
+    }
 }

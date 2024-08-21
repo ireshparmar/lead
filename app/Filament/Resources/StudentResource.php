@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentAptitudeEntranceTestRelationManager;
+use App\Filament\Resources\StudentResource\RelationManagers\StudentDocsRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentEducationLevelsRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentLanguageEntranceTestsRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentWorkExperienceRelationManager;
@@ -347,9 +348,12 @@ class StudentResource extends Resource
                 StudentEducationLevelsRelationManager::class,
                 StudentLanguageEntranceTestsRelationManager::class,
                 StudentAptitudeEntranceTestRelationManager::class,
-                StudentWorkExperienceRelationManager::class
-
+                StudentWorkExperienceRelationManager::class,
+                StudentDocsRelationManager::class
             ]),
+            RelationGroup::make('Counselling', [
+                StudentDocsRelationManager::class
+            ])
         ];
     }
 

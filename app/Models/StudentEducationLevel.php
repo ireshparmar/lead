@@ -26,6 +26,7 @@ class StudentEducationLevel extends Model
         'updated_by',
         'verified_by',
         'verified_date',
+        'remark'
     ];
 
     protected static function booted()

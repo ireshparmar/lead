@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Schema::create('student_documents', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->foreignId('student_id')->nullable()->constrained("students")->cascadeOnDelete();
-        //     $table->string("doc_name");
-        //     $table->string("doc_org_name", 255)->nullable();
-        //     $table->string("doc_type", 255);
-        //     $table->string("other_type", 255)->nullable();
-        //     $table->string('isVerified', 50)->default('Unverified')->comment('Verified, Unverified, Reupload');
-        //     $table->mediumText('note')->nullable();
-        //     $table->mediumText('remark')->nullable();
-        //     $table->foreignId('created_by')->nullable()->constrained("users")->cascadeOnDelete();
-        //     $table->foreignId('updated_by')->nullable()->constrained("users")->cascadeOnDelete();
-        //     $table->foreignId('verified_by')->nullable()->constrained("users")->cascadeOnDelete();
-        //     $table->timestamp('verified_date')->nullable();
-        //     $table->timestamps();
-        // });
+        Schema::create('student_documents', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('student_id')->nullable()->constrained("students")->cascadeOnDelete();
+            $table->string("doc_name");
+            $table->string("doc_org_name", 255)->nullable();
+            $table->foreignId('doc_type_id')->nullable()->constrained("document_types")->cascadeOnDelete();
+            $table->string('isVerified', 50)->default('Unverified')->comment('Verified, Unverified, Reupload');
+            $table->mediumText('note')->nullable();
+            $table->mediumText('remark')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained("users")->cascadeOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained("users")->cascadeOnDelete();
+            $table->foreignId('verified_by')->nullable()->constrained("users")->cascadeOnDelete();
+            $table->timestamp('verified_date')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
