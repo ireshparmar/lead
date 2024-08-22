@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\EntranceExamResource\Pages;
+use App\Filament\Resources\EnteranceExamResource\Pages;
 use App\Filament\Resources\EntranceExamResource\RelationManagers;
+use App\Models\EnteranceExam;
 use App\Models\EntranceExam;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,9 +14,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class EntranceExamResource extends Resource
+class EnteranceExamResource extends Resource
 {
-    protected static ?string $model = EntranceExam::class;
+    protected static ?string $model = EnteranceExam::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -52,7 +53,7 @@ class EntranceExamResource extends Resource
                     $status = $state ? 'Active' : 'Inactive';
                     $record->status = $status;
                     $record->save();
-                })->getStateUsing(function (EntranceExam $record) {
+                })->getStateUsing(function (EnteranceExam $record) {
                     return $record->status == 'Active' ? 1 : 0;
                 }),
                 Tables\Columns\TextColumn::make('createdBy.name')->label('Created By')->sortable()->toggleable(),
@@ -78,9 +79,9 @@ class EntranceExamResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListEntranceExams::route('/'),
-            'create' => Pages\CreateEntranceExam::route('/create'),
-            'edit' => Pages\EditEntranceExam::route('/{record}/edit'),
+            'index' => Pages\ListEnteranceExams::route('/'),
+            'create' => Pages\CreateEnteranceExam::route('/create'),
+            'edit' => Pages\EditEnteranceExam::route('/{record}/edit'),
         ];
     }
 }

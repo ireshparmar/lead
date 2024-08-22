@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\EntranceExamResource\Pages;
+namespace App\Filament\Resources\EligibilityResource\Pages;
 
-use App\Filament\Resources\EntranceExamResource;
+use App\Filament\Resources\EligibilityResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditEntranceExam extends EditRecord
+class EditEligibility extends EditRecord
 {
-    protected static string $resource = EntranceExamResource::class;
+    protected static string $resource = EligibilityResource::class;
 
     protected function getHeaderActions(): array
     {

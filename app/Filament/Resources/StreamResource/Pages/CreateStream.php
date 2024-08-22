@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Filament\Resources\EntranceExamResource\Pages;
+namespace App\Filament\Resources\StreamResource\Pages;
 
-use App\Filament\Resources\EntranceExamResource;
+use App\Filament\Resources\StreamResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateEntranceExam extends CreateRecord
+class CreateStream extends CreateRecord
 {
-    protected static string $resource = EntranceExamResource::class;
+    protected static string $resource = StreamResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['created_by'] = auth()->id();
+
         return $data;
     }
 }

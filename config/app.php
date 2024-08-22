@@ -192,6 +192,14 @@ return [
     'status'  => [
         'Active' => 'Active',
         'Inactive' => 'Inactive',
+    ],
+
+    'interestedCourseStatus' => [
+        'Course Selected' => 'Course Selected',
+        'Documents Upload' => 'Document Upload',
+        'Moved To Application' => 'Moved To Application',
+        'Waiting For IELTS?PTE' => 'Waiting For IELTS?PTE',
     ]
+
 
 ];
