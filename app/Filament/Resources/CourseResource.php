@@ -72,7 +72,7 @@ class CourseResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('eligibility_id')
                     ->label('Min. Eligibility')
-                    ->relationship('eligibility', 'name')
+                    ->relationship('minEligibility', 'name')
                     ->required(),
                 Forms\Components\Select::make('degree_id')
                     ->relationship('degree', 'name')
@@ -84,7 +84,7 @@ class CourseResource extends Resource
                 Forms\Components\TextInput::make('fees')
                     ->nullable()
                     ->numeric(),
-                Forms\Components\Select::make('eligibility')
+                Forms\Components\TextInput::make('eligibility')
                     ->nullable(),
                 Forms\Components\Textarea::make('facility')
                     ->nullable(),
@@ -118,7 +118,7 @@ class CourseResource extends Resource
                 Tables\Columns\TextColumn::make('college.college_name')->label('College')->sortable()->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('campus.campus_name')->label('Campus')->sortable()->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('stream.name')->label('Stream')->sortable()->searchable()->toggleable(),
-                Tables\Columns\TextColumn::make('eligibility.name')->label('Eligibility')->sortable()->searchable()->toggleable(),
+                Tables\Columns\TextColumn::make('minEligibility.name')->label('Min Eligibility')->sortable()->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('degree.name')->label('Degree')->sortable()->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('duration')->label('Duration')->sortable()->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('fees')->formatStateUsing(function ($record) {
@@ -137,7 +137,7 @@ class CourseResource extends Resource
                 Tables\Filters\SelectFilter::make('college_id')->relationship('college', 'college_name')->label('College')->multiple()->preload(),
                 Tables\Filters\SelectFilter::make('campus_id')->relationship('campus', 'campus_name')->label('Campus')->multiple()->preload(),
                 Tables\Filters\SelectFilter::make('stream_id')->relationship('stream', 'name')->label('Stream')->multiple()->preload(),
-                Tables\Filters\SelectFilter::make('eligibility_id')->relationship('eligibility', 'name')->label('Eligibility')->multiple()->preload(),
+                Tables\Filters\SelectFilter::make('eligibility_id')->relationship('minEligibility', 'name')->label('Min Eligibility')->multiple()->preload(),
                 Tables\Filters\SelectFilter::make('degree_id')->relationship('degree', 'name')->label('Degree')->multiple()->preload(),
             ])
             ->actions([

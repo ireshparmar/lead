@@ -74,7 +74,7 @@ class Course extends Model
     /**
      * Get the eligibility associated with the course.
      */
-    public function eligibility()
+    public function minEligibility()
     {
         return $this->belongsTo(Eligibility::class, 'eligibility_id');
     }

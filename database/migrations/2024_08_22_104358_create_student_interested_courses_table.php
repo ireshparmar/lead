@@ -13,37 +13,41 @@ return new class extends Migration
     {
         Schema::create('student_interested_courses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('country_id');
             $table->unsignedBigInteger('course_id');
             $table->unsignedBigInteger('college_id');
             $table->unsignedBigInteger('campus_id');
-            $table->string('eligibility')->nullable(); //min eligibility
+            $table->unsignedBigInteger('min_eligibility')->nullable(); //min eligibility
             $table->string('duration')->nullable();
-
-            $table->string('facility')->nullable();
-            $table->string('document')->nullable();
+            $table->longText('facility')->nullable();
+            $table->longText('document')->nullable();
             $table->string('fees')->nullable();
             $table->string('status');
-            $table->string('remark')->nullable();
-            $table->unsignedInteger('reference_portal_id');
+            $table->longText('remark')->nullable();
+            $table->string('is_move_to_application', 20)->nullable()->comment('Yes,No');
+
+            $table->string('allocate_to')->nullable();
+            $table->unsignedBigInteger('allocated_user')->nullable();
+            $table->longText('note')->nullable();
+            $table->unsignedInteger('reference_portal_id')->nullable();
             $table->string('ref_link')->nullable();
-            $table->unsignedBigInteger('eligibility_id')->nullable();
+            $table->string('eligibility')->nullable();
             $table->unsignedBigInteger('intakemonth_id')->nullable();
             $table->unsignedBigInteger('intakeyear_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-
-
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
             $table->foreign('college_id')->references('id')->on('colleges')->onDelete('cascade');
             $table->foreign('campus_id')->references('id')->on('campuses')->onDelete('cascade');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-            $table->foreign('eligibility_id')->references('id')->on('eligibilities')->onDelete('cascade');
+            $table->foreign('min_eligibility')->references('id')->on('eligibilities')->onDelete('cascade');
             $table->foreign('reference_portal_id')->references('id')->on('reference_portals')->onDelete('cascade');
             $table->foreign('intakemonth_id')->references('id')->on('intakemonths')->onDelete('cascade');
             $table->foreign('intakeyear_id')->references('id')->on('intakeyears')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('allocated_user')->references('id')->on('users')->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();
