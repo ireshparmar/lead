@@ -129,4 +129,19 @@ class Student extends Model
     {
         return $this->hasMany(StudentInterestedCourse::class);
     }
+
+    public function collegeApplication()
+    {
+        return $this->hasMany(StudentCollegeApplication::class);
+    }
+
+    public function studentAdmissions()
+    {
+        return $this->hasMany(StudentAdmission::class);
+    }
+
+    public function studentVisas()
+    {
+        return $this->hasMany(StudentVisa::class, 'student_id');
+    }
 }

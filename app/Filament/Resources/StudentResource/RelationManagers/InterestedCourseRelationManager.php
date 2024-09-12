@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\StudentResource\RelationManagers;
 
+use App\Models\StudentCollegeApplication;
 use App\Models\StudentInterestedCourse;
 use Carbon\Carbon;
 use Filament\Actions\CreateAction;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
@@ -69,7 +71,7 @@ class InterestedCourseRelationManager extends RelationManager
                     })
                     ->required()
                     ->reactive()
-                    ->afterStateUpdated(function (callable $set) {
+                    ->afterStateUpdated(function (callable $set, $get) {
                         $set('college_id', null);
                         $set('campus_id', null);
                         $set('min_eligibility', null);
@@ -78,6 +80,7 @@ class InterestedCourseRelationManager extends RelationManager
                         $set('document', null);
                         $set('fees', null);
                         $set('eligibility', null);
+                        $set('degree_id', $get('course_id'));
                     })
                     ->options(function ($get) {
                         $courses = \App\Models\Course::where('country_id', $get('country_id'))->get();
@@ -105,6 +108,7 @@ class InterestedCourseRelationManager extends RelationManager
                         return $colleges->pluck('college.college_name', 'college.id');
                     }),
                 Forms\Components\Hidden::make('selected_course_id')->reactive(),
+                Forms\Components\Hidden::make('degree_id')->reactive(),
 
                 Forms\Components\Select::make('campus_id')
                     ->relationship('campus', 'campus_name', function ($query, $get) {
@@ -126,11 +130,11 @@ class InterestedCourseRelationManager extends RelationManager
                             if ($course) {
                                 $course = $course->toArray();
                                 $set('min_eligibility', $course['min_eligibility']['id']);
-                                $set('duration', $course['duration']);
-                                $set('facility', $course['facility']);
-                                $set('document', $course['document']);
-                                $set('fees', $course['fees']);
-                                $set('eligibility', $course['eligibility']);
+                                // $set('duration', $course['duration']);
+                                // $set('facility', $course['facility']);
+                                // $set('document', $course['document']);
+                                // $set('fees', $course['fees']);
+                                // $set('eligibility', $course['eligibility']);
                             }
                         }
                     })
@@ -140,9 +144,40 @@ class InterestedCourseRelationManager extends RelationManager
                     }),
                 Forms\Components\Select::make('min_eligibility')
                     ->relationship('minEligibility', 'name')
-                    ->disabled()
                     ->label('Min Eligibility')
                     ->nullable()
+                    ->reactive()
+                    ->options(function ($get) {
+                        $eligibilities = \App\Models\Eligibility::whereHas('courses', function ($query) use ($get) {
+                            $query->where([
+                                'degree_id' => $get('course_id'),
+                                'college_id' => $get('college_id'),
+                                'campus_id' => $get('campus_id')
+                            ]);
+                        })->pluck('name', 'id')->toArray();
+
+                        return $eligibilities;
+                    })
+                    ->afterStateUpdated(function (callable $set, $get) {
+                        $set('duration', null);
+                        $set('facility', null);
+                        $set('document', null);
+                        $set('fees', null);
+                        $set('eligibility', null);
+                        $course = \App\Models\Course::where([
+                            'degree_id' => $get('course_id'),
+                            'college_id' => $get('college_id'),
+                            'campus_id' => $get('campus_id'),
+                            'eligibility_id' => $get('min_eligibility')
+                        ])->first();
+                        if ($course) {
+                            $set('duration', $course->duration);
+                            $set('facility', $course->facility);
+                            $set('document', $course->document);
+                            $set('fees', $course->fees);
+                            $set('eligibility', $course->eligibility);
+                        }
+                    })
                     ->dehydrateStateUsing(function ($state) {
                         return $state;
                     }) // Force the value to be null when saving
@@ -196,22 +231,25 @@ class InterestedCourseRelationManager extends RelationManager
             ->recordTitleAttribute('course.degree.name')
             ->columns([
                 Tables\Columns\TextColumn::make('country.name')->sortable()->toggleable(),
-                Tables\Columns\TextColumn::make('course.degree.name')->sortable()->toggleable(),
+                Tables\Columns\TextColumn::make('course.degree.name')->label('Course')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('college.college_name')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('campus.campus_name')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('minEligibility.name')->label('Min. Eligibility')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('duration')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('facility')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('document')->toggleable(),
-                Tables\Columns\TextColumn::make('fees')->toggleable(),
+                // Tables\Columns\TextColumn::make('fees')->toggleable(),
+                Tables\Columns\TextColumn::make('fees')->formatStateUsing(function ($record) {
+                    return $record->fees . '(' . $record->country->currency . ')';
+                })->label('Fees')->sortable()->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->toggleable()
                     ->action(
                         Action::make('Status')->form([
                             Select::make('status')->options(config('app.interestedCourseStatus'))->required(),
-                            Select::make('is_move_to_application')->options(['Yes' => 'Yes', 'No' => 'No'])->required(),
-                            Select::make('allocate_to')->options(['Yes' => 'Yes', 'No' => 'No'])->required(),
+                            Select::make('is_move_to_application')->label('Move To Application')->options(['Yes' => 'Yes', 'No' => 'No'])->required(),
+                            Select::make('allocate_to')->options(['Yes' => 'Yes', 'No' => 'No'])->reactive(),
                             Select::make('allocated_user')->label('Allocate To')->options(
                                 function () {
                                     $users = \App\Models\User::where('status', 'Active')->whereHas('roles', function ($query) {
@@ -220,25 +258,67 @@ class InterestedCourseRelationManager extends RelationManager
                                     return $users->pluck('name', 'id');
                                 }
 
-                            ),
-                            Textarea::make('note')->nullable()
+                            )
+                                ->requiredWith('allocate_to') // Make required when allocate_to is 'Yes'
+                                ->visible(fn($get) => $get('allocate_to') === 'Yes'),
+                            Textarea::make('note')->nullable()->visible(fn($get) => $get('allocate_to') === 'Yes'),
 
                         ])->action(function (StudentInterestedCourse $record, array $data) {
-                            $record->isVerified = $data['isVerified'];
-                            $record->remark = $data['remark'] ?? null; // Assuming `remark` is a column in your model
-                            if ($data['isVerified'] == 'Verified') {
-                                $record->verified_by = Auth::id();
-                                $record->verified_date = Carbon::now();
-                            } else {
-                                $record->verified_by = null;
-                                $record->verified_date = null;
+                            $record->status = $data['status'];
+                            $record->is_move_to_application = $data['is_move_to_application'];
+                            $record->allocate_to = $data['allocate_to'];
+                            if (isset($data['allocated_user']) && !empty($data['allocated_user'])) {
+                                $record->allocated_user = $data['allocated_user'];
                             }
+                            $record->note = $data['note'];
                             $record->save();
+
+                            // $studentCollegeApplication = StudentCollegeApplication::where('interested_course_id', $record->id)->count();
+                            // if ($studentCollegeApplication) {
+                            //     Notification::make()
+                            //         ->title('This course is already moved to application')
+                            //         ->danger()
+                            //         ->send();
+
+                            //     return;
+                            // }
+                            $clApplication  = new StudentCollegeApplication();
+                            $clData = [
+                                'interested_course_id' => $record->id,
+                                'student_id' => $record->student_id,
+                                'country_id' => $record->country_id,
+                                'course_id' => $record->course_id,
+                                'college_id' => $record->college_id,
+                                'campus_id' => $record->campus_id,
+                                'min_eligibility'  => $record->min_eligibility,
+                                'duration'  => $record->duration,
+                                'facility' => $record->facility,
+                                'document' => $record->document,
+                                'fees' => $record->fees,
+                                'fees_currency' => $record->country->currency,
+                                'status' => 'New',
+                                'reference_portal_id'  => $record->reference_portal_id,
+                                'ref_link'  => $record->ref_link,
+                                'eligibility'  => $record->eligibility,
+                                'intakemonth_id'  => $record->intakemonth_id,
+                                'intakeyear_id'  => $record->intakeyear_id,
+                                'created_by'  => Auth::id()
+                            ];
+                            $clApplication->create($clData);
+                            Notification::make()
+                                ->title('Course moved to application successfully.')
+                                ->success()
+                                ->send();
                         })->mountUsing(function (Forms\ComponentContainer $form, Model $record) {
                             // Load existing payments data into the form
                             $form->fill([
                                 'isVerified' => $record->isVerified,
-                                'remark'  => $record->remark
+                                'remark'  => $record->remark,
+                                'status' => $record->status,
+                                'is_move_to_application' => $record->is_move_to_application,
+                                'allocate_to' => $record->allocate_to,
+                                'allocated_user' => $record->allocated_user,
+                                'note' => $record->note
                             ]);
                         })
                     ),
@@ -248,6 +328,7 @@ class InterestedCourseRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('eligibility')->toggleable(),
                 Tables\Columns\TextColumn::make('intakeMonth.inmonth_name')->toggleable(),
                 Tables\Columns\TextColumn::make('intakeYear.inyear_name')->toggleable(),
+                Tables\Columns\TextColumn::make('created_at')->date()->toggleable(),
                 Tables\Columns\TextColumn::make('createdBy.name')->toggleable(),
                 Tables\Columns\TextColumn::make('updatedBy.name')->toggleable(),
             ])
@@ -259,7 +340,6 @@ class InterestedCourseRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ViewAction::make()
             ]);
     }

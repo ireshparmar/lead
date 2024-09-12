@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('student_interested_courses', function (Blueprint $table) {
+        Schema::create('student_college_applications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->foreignId('interested_course_id')->constrained()->on('student_interested_courses')->onDelete('cascade');
+            $table->foreignId('student_id')->constrained()->on('students')->onDelete('cascade');
             $table->unsignedBigInteger('country_id');
             $table->unsignedBigInteger('course_id');
             $table->unsignedBigInteger('degree_id');
@@ -24,10 +25,10 @@ return new class extends Migration
             $table->longText('facility')->nullable();
             $table->longText('document')->nullable();
             $table->string('fees')->nullable();
+            $table->string('fees_currency')->nullable();
             $table->string('status');
             $table->longText('remark')->nullable();
-            $table->string('is_move_to_application', 20)->nullable()->comment('Yes,No');
-
+            $table->string('is_move_to_admission', 20)->nullable()->comment('Yes,No');
             $table->string('allocate_to')->nullable();
             $table->unsignedBigInteger('allocated_user')->nullable();
             $table->longText('note')->nullable();
@@ -38,6 +39,8 @@ return new class extends Migration
             $table->unsignedBigInteger('intakeyear_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->date('app_date')->nullable();
+            $table->string('app_number')->nullable();
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
             $table->foreign('college_id')->references('id')->on('colleges')->onDelete('cascade');
             $table->foreign('campus_id')->references('id')->on('campuses')->onDelete('cascade');
@@ -50,7 +53,6 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('allocated_user')->references('id')->on('users')->onDelete('cascade');
-
             $table->timestamps();
             $table->softDeletes();
         });
@@ -61,6 +63,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('student_interested_courses');
+        Schema::dropIfExists('student_college_applications');
     }
 };

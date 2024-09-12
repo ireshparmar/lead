@@ -102,4 +102,15 @@ class Course extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function collegeApplication()
+    {
+        return $this->hasMany(StudentCollegeApplication::class, 'course_id', 'id');
+    }
+
+
+    public function interestedCourse()
+    {
+        return $this->hasMany(StudentInterestedCourse::class, 'course_id', 'id');
+    }
 }

@@ -36,4 +36,9 @@ class Eligibility extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'eligibility_id', 'id');
+    }
 }

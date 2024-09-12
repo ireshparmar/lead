@@ -36,4 +36,9 @@ class Degree extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'degree_id', 'id');
+    }
 }

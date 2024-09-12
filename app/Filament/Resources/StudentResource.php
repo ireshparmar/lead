@@ -3,11 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StudentResource\Pages;
+use App\Filament\Resources\StudentResource\RelationManagers\CollegeApplicationRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\InterestedCourseRelationManager;
+use App\Filament\Resources\StudentResource\RelationManagers\StudentAdmissionsRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentAptitudeEntranceTestRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentDocsRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentEducationLevelsRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentLanguageEntranceTestsRelationManager;
+use App\Filament\Resources\StudentResource\RelationManagers\StudentVisaRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentWorkExperienceRelationManager;
 use App\Models\Student;
 use App\Models\StudentLanguageEntranceTest;
@@ -354,7 +357,18 @@ class StudentResource extends Resource
             ]),
             RelationGroup::make('Counselling', [
                 InterestedCourseRelationManager::class
-            ])
+            ]),
+            RelationGroup::make('Application', [
+                CollegeApplicationRelationManager::class
+            ]),
+            RelationGroup::make('Admission', [
+                StudentAdmissionsRelationManager::class
+            ]),
+            RelationGroup::make('Visa', [
+                StudentVisaRelationManager::class
+            ]),
+
+
         ];
     }
 
@@ -364,7 +378,9 @@ class StudentResource extends Resource
             'index' => Pages\ListStudents::route('/'),
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
-            'detail' => Pages\StudentDetail::route('/{record}/detail')
+            'detail' => Pages\StudentDetail::route('/{record}/detail'),
+            'admission-documents' => Pages\AdmissionDocuments::route('/{record}/admission-documents'),  // Make sure this is registered properly
+
         ];
     }
 }

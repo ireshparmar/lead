@@ -46,4 +46,19 @@ class Country extends Model
             $builder->whereIn('iso2', $specificCountries);
         });
     }
+
+    public function course()
+    {
+        return $this->hasMany(Course::class, 'country_id', 'id');
+    }
+
+    public function studentInterestedCourses()
+    {
+        return $this->hasMany(StudentInterestedCourse::class);
+    }
+
+    public function collegeApplication()
+    {
+        return $this->hasMany(StudentCollegeApplication::class, 'country_id');
+    }
 }

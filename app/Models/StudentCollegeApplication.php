@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class StudentInterestedCourse extends Model
+class StudentCollegeApplication extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -23,6 +23,7 @@ class StudentInterestedCourse extends Model
         'facility',
         'document',
         'fees',
+        'fees_currency',
         'status',
         'remark',
         'reference_portal_id',
@@ -32,10 +33,13 @@ class StudentInterestedCourse extends Model
         'intakeyear_id',
         'created_by',
         'updated_by',
-        'is_move_to_application',
+        'is_move_to_admission',
         'allocate_to',
         'allocated_user',
-        'note'
+        'note',
+        'app_date',
+        'app_number',
+        'interested_course_id'
 
     ];
 
@@ -51,6 +55,11 @@ class StudentInterestedCourse extends Model
         });
     }
 
+    public function interestedCourse()
+    {
+        return $this->belongsTo(StudentInterestedCourse::class, 'interested_course_id');
+    }
+
     public function student()
     {
         return $this->belongsTo(Student::class);
@@ -63,12 +72,7 @@ class StudentInterestedCourse extends Model
 
     public function course()
     {
-        return $this->belongsTo(Course::class);
-    }
-
-    public function degree()
-    {
-        return $this->belongsTo(Degree::class);
+        return $this->belongsTo(Course::class)->with('degree');
     }
 
     public function college()
@@ -114,10 +118,5 @@ class StudentInterestedCourse extends Model
     public function allocatedUser()
     {
         return $this->belongsTo(User::class, 'allocated_user');
-    }
-
-    public function collegeApplication()
-    {
-        return $this->hasMany(StudentCollegeApplication::class, 'interested_course_id');
     }
 }
