@@ -18,8 +18,9 @@ class VisaTypeSeeder extends Seeder
             ['name' => 'Visitor'],
             ['name' => 'Work Permit'],
         ];
-
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('visa_types')->truncate();
         DB::table('visa_types')->insert($types);
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
