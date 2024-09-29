@@ -9,11 +9,14 @@ use App\Filament\Resources\StudentResource\RelationManagers\StudentAdmissionsRel
 use App\Filament\Resources\StudentResource\RelationManagers\StudentAptitudeEntranceTestRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentDocsRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentEducationLevelsRelationManager;
+use App\Filament\Resources\StudentResource\RelationManagers\StudentFeesRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentLanguageEntranceTestsRelationManager;
+use App\Filament\Resources\StudentResource\RelationManagers\StudentPaymentDetailRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentVisaRelationManager;
 use App\Filament\Resources\StudentResource\RelationManagers\StudentWorkExperienceRelationManager;
 use App\Models\Student;
 use App\Models\StudentLanguageEntranceTest;
+use App\Models\StudentPaymentDetail;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
@@ -366,6 +369,10 @@ class StudentResource extends Resource
             ]),
             RelationGroup::make('Visa', [
                 StudentVisaRelationManager::class
+            ]),
+            RelationGroup::make('Payment', [
+                StudentFeesRelationManager::class,
+                StudentPaymentDetailRelationManager::class
             ]),
 
 

@@ -144,4 +144,14 @@ class Student extends Model
     {
         return $this->hasMany(StudentVisa::class, 'student_id');
     }
+
+    public function studentFees()
+    {
+        return $this->hasMany(StudentFee::class); // Assuming StudentFees model
+    }
+
+    public function studentPayments()
+    {
+        return $this->hasMany(StudentPaymentDetail::class); // Assuming StudentPaymentDetail model
+    }
 }

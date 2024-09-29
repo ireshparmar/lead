@@ -234,6 +234,11 @@ return [
         'Appoinment Confirm' => 'Appoinment Confirm',
         'Visa Approval' => 'Visa Approval',
         'Visa Rejected - Reporcess' => 'Visa Rejected - Reporcess',
+    ],
+
+    'packageType' => [
+        'Immigration' => 'Immigration',
+        'Student' => 'Student',
     ]
 
 

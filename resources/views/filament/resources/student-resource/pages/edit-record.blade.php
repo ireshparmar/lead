@@ -21,64 +21,8 @@
         {{ $form() }}
     @endif
 
-    <x-filament::section>
-
-        <div class="w-full">
-            <ol class="flex items-center space-x-2">
-                <!-- Active Step 1 -->
-                <li class="relative flex-1 text-center">
-                    <div class="flex items-center justify-center w-10 h-10 bg-green-600 text-white rounded-full">
-                        1
-                    </div>
-                    <div class="absolute inset-0 flex items-center justify-center -z-10">
-                        <div class="w-full h-0.5 bg-green-600"></div>
-                    </div>
-                    <div class="mt-2">
-                        <h3 class="font-medium text-green-600">User Info</h3>
-                        <p class="text-sm text-gray-500">Step details here</p>
-                    </div>
-                </li>
-
-                <!-- Inactive Step 2 -->
-                <li class="relative flex-1 text-center">
-                    <div class="flex items-center justify-center w-10 h-10 bg-gray-200 text-gray-500 rounded-full">
-                        2
-                    </div>
-                    <div class="absolute inset-0 flex items-center justify-center -z-10">
-                        <div class="w-full h-0.5 bg-gray-300"></div>
-                    </div>
-                    <div class="mt-2">
-                        <h3 class="font-medium text-gray-500">Company Info</h3>
-                        <p class="text-sm text-gray-500">Step details here</p>
-                    </div>
-                </li>
-
-                <!-- Inactive Step 3 -->
-                <li class="relative flex-1 text-center">
-                    <div class="flex items-center justify-center w-10 h-10 bg-gray-200 text-gray-500 rounded-full">
-                        3
-                    </div>
-                    <div class="absolute inset-0 flex items-center justify-center -z-10">
-                        <div class="w-full h-0.5 bg-gray-300"></div>
-                    </div>
-                    <div class="mt-2">
-                        <h3 class="font-medium text-gray-500">Payment Info</h3>
-                        <p class="text-sm text-gray-500">Step details here</p>
-                    </div>
-                </li>
-
-                <!-- Inactive Step 4 -->
-                <li class="relative flex-1 text-center">
-                    <div class="flex items-center justify-center w-10 h-10 bg-gray-200 text-gray-500 rounded-full">
-                        4
-                    </div>
-                    <div class="mt-2">
-                        <h3 class="font-medium text-gray-500">Review</h3>
-                        <p class="text-sm text-gray-500">Step details here</p>
-                    </div>
-                </li>
-            </ol>
-        </div>
+    {{-- <x-filament::section>
+        <livewire:student-progress :student-id="$this->data['id']" />
 
 
 
@@ -86,7 +30,8 @@
 
 
 
-    </x-filament::section>
+
+    </x-filament::section> --}}
 
     @if (count($relationManagers))
         <x-filament-panels::resources.relation-managers :active-locale="isset($activeLocale) ? $activeLocale : null" :active-manager="$this->activeRelationManager ??
