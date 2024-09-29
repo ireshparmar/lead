@@ -33,40 +33,39 @@ class LeadDocsRelationManager extends RelationManager
 
 
                 Forms\Components\Select::make('doc_type')->name('type')
-                ->options(config('app.leadDocType'))
-                //->required(fn (callable $get) => !is_null($get('doc_name'))),
-                ->required()
-                ->live()
-                ->rules([
-                    fn (RelationManager $livewire, Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($livewire, $get) {
-                        $count = LeadDoc::where(['lead_id' => $livewire->getOwnerRecord()->id,'doc_type' =>$value])
-                        ->where('id','!=',$get('id'))->count();
-                        if($count >=1 && $get('doc_type')!='other'){
-                            $fail('The document of this type is already uploaded.');
-                        }
+                    ->options(config('app.leadDocType'))
+                    //->required(fn (callable $get) => !is_null($get('doc_name'))),
+                    ->required()
+                    ->live()
+                    ->rules([
+                        fn(RelationManager $livewire, Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($livewire, $get) {
+                            $count = LeadDoc::where(['lead_id' => $livewire->getOwnerRecord()->id, 'doc_type' => $value])
+                                ->where('id', '!=', $get('id'))->count();
+                            if ($count >= 1 && $get('doc_type') != 'other') {
+                                $fail('The document of this type is already uploaded.');
+                            }
+                        },
 
-                    },
-
-                ]),
+                    ]),
                 Forms\Components\TextInput::make('other_type')
-                                ->label('Other')
-                                ->default(null)
-                                ->hidden(fn (Get $get) => $get('doc_type') !== 'other')
-                                ->requiredIf('doc_type', 'other'),
-                                Forms\Components\FileUpload::make('doc_name')
-                                ->name('Select File')
-                                ->downloadable()
-                                ->directory(config('app.UPLOAD_DIR').'/leadDocs')
-                                ->openable()
-                                ->reactive()
-                                ->previewable(true)
-                                ->storeFileNamesIn('doc_org_name')
-                                ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
-                                ->afterStateUpdated(function ($state, callable $get, callable $set, $record, $context) {
-                                    //$index = $context->getIndex();
-                                   // $set("documents.{$index}.doc_name", !empty($state));
-                                })
-                                ->required(),
+                    ->label('Other')
+                    ->default(null)
+                    ->hidden(fn(Get $get) => $get('doc_type') !== 'other')
+                    ->requiredIf('doc_type', 'other'),
+                Forms\Components\FileUpload::make('doc_name')
+                    ->name('Select File')
+                    ->downloadable()
+                    ->directory(config('app.UPLOAD_DIR') . '/leadDocs')
+                    ->openable()
+                    ->reactive()
+                    ->previewable(true)
+                    ->storeFileNamesIn('doc_org_name')
+                    ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                    ->afterStateUpdated(function ($state, callable $get, callable $set, $record, $context) {
+                        //$index = $context->getIndex();
+                        // $set("documents.{$index}.doc_name", !empty($state));
+                    })
+                    ->required(),
             ]);
     }
 
@@ -76,28 +75,27 @@ class LeadDocsRelationManager extends RelationManager
             ->recordTitleAttribute('doc_name')
             ->columns([
                 Tables\Columns\ImageColumn::make('doc_image')
-                ->label('Image')
-                ->width('80px')
-                ->height('80px')
-                ->square()
-                ->defaultImageUrl(url('/images/placeholder.jpg'))
-                ->getStateUsing(function (LeadDoc $record): string {
-                    $extension = pathinfo($record->doc_name);
-                    if(!in_array(strtolower($extension['extension']),['jpg','png','jpeg'])){
-                        return url('/images/placeholder.jpg');
-                    }
-                    return $record->doc_name;
-                }),
+                    ->label('File')
+                    ->width('80px')
+                    ->height('80px')
+                    ->square()
+                    ->defaultImageUrl(url('/images/placeholder.jpg'))
+                    ->getStateUsing(function (LeadDoc $record): string {
+                        $extension = pathinfo($record->doc_name);
+                        if (!in_array(strtolower($extension['extension']), ['jpg', 'png', 'jpeg'])) {
+                            return url('/images/placeholder.jpg');
+                        }
+                        return $record->doc_name;
+                    }),
                 Tables\Columns\TextColumn::make('doc_org_name')->label('Name')->sortable(),
                 Tables\Columns\TextColumn::make('doc_type')->label('Type')
-                ->getStateUsing(function (LeadDoc $record): string {
-                    if($record->doc_type == 'other'){
-                        return config('app.leadDocType')[$record->doc_type].' ('.$record->other_type.')';
-                    }else {
-                        return config('app.leadDocType')[$record->doc_type];
-
-                    }
-                 })->sortable(),
+                    ->getStateUsing(function (LeadDoc $record): string {
+                        if ($record->doc_type == 'other') {
+                            return config('app.leadDocType')[$record->doc_type] . ' (' . $record->other_type . ')';
+                        } else {
+                            return config('app.leadDocType')[$record->doc_type];
+                        }
+                    })->sortable(),
 
             ])
             ->filters([
@@ -111,12 +109,12 @@ class LeadDocsRelationManager extends RelationManager
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\Action::make('Download')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->label('')
-                ->tooltip('Download')
-                ->action(function ($record){
-                    return response()->download(Storage::disk(config('app.FILE_DISK'))->path($record->doc_name));
-                })
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->label('')
+                    ->tooltip('Download')
+                    ->action(function ($record) {
+                        return response()->download(Storage::disk(config('app.FILE_DISK'))->path($record->doc_name));
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

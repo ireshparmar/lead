@@ -161,6 +161,85 @@ return [
         '1' => 'First Payment',
         '2' => 'Second Payment',
         '3' => 'Third Payment'
+    ],
+    'gender' => [
+        'Male' => 'Male',
+        'Female' => 'Female',
+        'Transgender'  => 'Transgender'
+    ],
+    'educationStatus' => [
+        'Completed' => 'Completed',
+        'In Process' => 'In Process'
+    ],
+    'verifiedStatus' => [
+        'Verified' => 'Verified',
+        'Unverified' => 'Unverified',
+        'Reupload' => 'Reupload',
+
+    ],
+    'enterancExamType' => [
+        'Language' => 'Language',
+        'Aptitude' => 'Aptitude'
+    ],
+    'docTypeType' => [
+        'Compulsory' => 'Compulsory',
+        'Optional' => 'Optional',
+    ],
+    'docTypeModule' => [
+        'General' => 'General',
+        'Student' => 'Student',
+    ],
+    'status'  => [
+        'Active' => 'Active',
+        'Inactive' => 'Inactive',
+    ],
+
+    'interestedCourseStatus' => [
+        'Course Selected' => 'Course Selected',
+        'Documents Upload' => 'Document Upload',
+        'Moved To Application' => 'Moved To Application',
+        'Waiting For IELTS?PTE' => 'Waiting For IELTS?PTE',
+    ],
+
+    'collegeAppStatus' => [
+        'New' => 'New',
+        'Application Prepared' => 'Application Prepared',
+        'Application Email To College' => 'Application Email To College',
+        'Application In Followup With College' => 'Application In Followup With College',
+        'Application Confirmation For Admission' => 'Application Confirmation For Admission',
+        'Application Recieved Now Uplodad I20 In Document Management' => 'Application Recieved Now Uplodad I20 In Document Management',
+        'Offer Accepted' => 'Offer Accepted',
+        'Given For Admission Process' => 'Given For Admission Process',
+        'Intake Of This University Is Closed' => 'Intake Of This University Is Closed'
+    ],
+
+    'studAdmissionStatus' => [
+        'New' => 'New',
+        'Admission Form Prepared' => 'Admission Form Prepared',
+        'Admission Form Send To College' => 'Admission Form Send To College',
+        'Admission Fee Paid' => 'Admission Fee Paid',
+        'Given For Visa Process' => 'Given For Visa Process',
+        'GT Part 1' => 'GT Part 1',
+        'GT Part 2' => 'GT Part 2',
+        'Application Fees' => 'Application Fees',
+        'GIS Payment Done' => 'GIS Payment Done',
+        'Tution Fee Paid' => 'Tution Fee Paid',
+        'PLA Letter Recieved' => 'PLA Letter Recieved',
+    ],
+
+    'studentVisaStatus' => [
+        'New' => 'New',
+        'Student Visa Filed' => 'Student Visa Filed',
+        'Document Received' => 'Document Received',
+        'Appoinment Confirm' => 'Appoinment Confirm',
+        'Visa Approval' => 'Visa Approval',
+        'Visa Rejected - Reporcess' => 'Visa Rejected - Reporcess',
+    ],
+
+    'packageType' => [
+        'Immigration' => 'Immigration',
+        'Student' => 'Student',
     ]
+
 
 ];

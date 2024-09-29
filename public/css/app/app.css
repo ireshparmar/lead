@@ -1,0 +1,4 @@
+.custom-strikethrough td {
+    /*text-decoration: line-through !important;*/
+    background-color: rgb(209, 207, 207);
+}

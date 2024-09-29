@@ -14,7 +14,8 @@
         "laravel/reverb": "@beta",
         "laravel/tinker": "^2.9",
         "leandrocfe/filament-apex-charts": "^3.1",
-        "maatwebsite/excel": "^3.1"
+        "maatwebsite/excel": "^3.1",
+        "ysfkaya/filament-phone-input": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",

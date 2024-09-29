@@ -21,6 +21,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
+use Filament\Support\Assets\Css;
 use Login;
 
 class AdminPanelProvider extends PanelProvider
@@ -36,6 +37,9 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->registration(Register::class)
             ->profile()
+            ->assets([
+                Css::make('app', resource_path('css/app.css')),
+            ])
             //->passwordReset()
             ->colors([
                 'primary' => Color::Amber,
@@ -47,8 +51,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-               // Widgets\AccountWidget::class,
-               // Widgets\FilamentInfoWidget::class,
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -60,14 +64,14 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-              //  \Hasnayeen\Themes\Http\Middleware\SetTheme::class
+                //  \Hasnayeen\Themes\Http\Middleware\SetTheme::class
             ])
             ->authMiddleware([
                 Authenticate::class,
             ])
             ->plugins([
                 FilamentApexChartsPlugin::make(),
-               // \Hasnayeen\Themes\ThemesPlugin::make()
+                // \Hasnayeen\Themes\ThemesPlugin::make()
             ])
             ->databaseNotificationsPolling('30s');
     }

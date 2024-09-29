@@ -19,21 +19,23 @@ class RolesSeeder extends Seeder
         DB::table('roles')->truncate();
 
         Role::insert([
-           [
-            'name' => 'Admin',
-            'guard_name' => 'web',
-            'created_at' => Carbon::now()
-          ],
-          [
-            'name' => 'Agent',
-            'guard_name' => 'web',
-            'created_at' => Carbon::now()
-          ],
-          [
-            'name' => 'Staff',
-            'guard_name' => 'web',
-            'created_at' => Carbon::now()
-          ],
+            [
+                'name' => 'Admin',
+                'guard_name' => 'web',
+                'created_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Agent',
+                'guard_name' => 'web',
+                'created_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Staff',
+                'guard_name' => 'web',
+                'created_at' => Carbon::now()
+            ],
         ]);
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
