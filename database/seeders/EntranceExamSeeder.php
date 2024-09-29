@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\EnteranceExam;
 use Illuminate\Database\Seeder;
 use App\Models\EntranceExam;
 
@@ -22,7 +23,7 @@ class EntranceExamSeeder extends Seeder
         ];
 
         foreach ($exams as $exam) {
-            EntranceExam::create($exam);
+            EnteranceExam::create($exam);
         }
     }
 }
