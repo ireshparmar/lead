@@ -72,6 +72,7 @@ class InterestedCourseRelationManager extends RelationManager
                     ->required()
                     ->reactive()
                     ->afterStateUpdated(function (callable $set, $get) {
+                        // Reset fields after course selection
                         $set('college_id', null);
                         $set('campus_id', null);
                         $set('min_eligibility', null);
@@ -80,11 +81,25 @@ class InterestedCourseRelationManager extends RelationManager
                         $set('document', null);
                         $set('fees', null);
                         $set('eligibility', null);
-                        $set('degree_id', $get('course_id'));
+
+                        // Set the degree based on the selected course
+                        $course = \App\Models\Course::find($get('course_id'));
+                        if ($course) {
+                            $set('degree_id', $course->degree_id);
+
+                        }
                     })
                     ->options(function ($get) {
-                        $courses = \App\Models\Course::where('country_id', $get('country_id'))->get();
-                        return $courses->pluck('degree.name', 'degree.id');
+                        // Show degrees associated with courses, but store course ID
+                        $courses = \App\Models\Course::with('degree')->where('country_id', $get('country_id'))->get();
+                        return $courses->mapWithKeys(function ($course) {
+                            return [$course->id => $course->degree->name]; // Display degree name, but store course ID
+                        });
+                    })
+                    ->default(function ($record) {
+
+                        // Set default to course_id when editing
+                        return $record ? $record->course_id : null;
                     }),
                 Forms\Components\Select::make('college_id')
                     ->relationship('college', 'name', function ($query, $get) {
@@ -103,9 +118,14 @@ class InterestedCourseRelationManager extends RelationManager
                         $set('eligibility', null);
                     })
                     ->options(function ($get, callable $set) {
-                        $colleges = \App\Models\Course::with('college')->where('country_id', $get('country_id'))->where('degree_id', $get('course_id'))->get();
+                        $colleges = \App\Models\Course::with('college')->where('country_id', $get('country_id'))->where('degree_id', $get('degree_id'))->get();
                         $set('selected_course_id', @$colleges[0]->id);
                         return $colleges->pluck('college.college_name', 'college.id');
+                    })
+                    ->default(function ($record) {
+
+                        // Set default to course_id when editing
+                        return $record ? $record->college_id : null;
                     }),
                 Forms\Components\Hidden::make('selected_course_id')->reactive(),
                 Forms\Components\Hidden::make('degree_id')->reactive(),
@@ -150,7 +170,7 @@ class InterestedCourseRelationManager extends RelationManager
                     ->options(function ($get) {
                         $eligibilities = \App\Models\Eligibility::whereHas('courses', function ($query) use ($get) {
                             $query->where([
-                                'degree_id' => $get('course_id'),
+                                'degree_id' => $get('degree_id'),
                                 'college_id' => $get('college_id'),
                                 'campus_id' => $get('campus_id')
                             ]);
@@ -165,7 +185,7 @@ class InterestedCourseRelationManager extends RelationManager
                         $set('fees', null);
                         $set('eligibility', null);
                         $course = \App\Models\Course::where([
-                            'degree_id' => $get('course_id'),
+                            'degree_id' => $get('degree_id'),
                             'college_id' => $get('college_id'),
                             'campus_id' => $get('campus_id'),
                             'eligibility_id' => $get('min_eligibility')
@@ -342,5 +362,14 @@ class InterestedCourseRelationManager extends RelationManager
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make()
             ]);
+    }
+
+    protected function configureCreateAction(ActionsCreateAction $action): void
+    {
+        parent::configureCreateAction($action);
+        $action->mutateFormDataUsing(function ($data) {
+            $data['course_id'] = $data['selected_course_id'];
+            return $data;
+        });
     }
 }

@@ -52,7 +52,7 @@ class StudentAdmissionsRelationManager extends RelationManager
                         $set('fees', null);
                         $set('eligibility', null);
                     })
-                    ->options(function ($get, $livewire) {
+                    ->options(function ($get, $livewire, callable $set, $record) {
 
                         $degrees = Degree::whereHas('courses', function ($query) use ($livewire) {
                             $query->whereHas('interestedCourse', function ($subQuery) use ($livewire) {
@@ -77,6 +77,9 @@ class StudentAdmissionsRelationManager extends RelationManager
 
                         $degrees = $degrees->pluck('name', 'id')
                             ->toArray();
+                            if ($livewire->mountedTableActions[0] == 'view') {
+                                $set('course_id',$record->degree_id);
+                            }
                         return $degrees;
                     }),
                 Forms\Components\Select::make('country_id')
@@ -262,7 +265,7 @@ class StudentAdmissionsRelationManager extends RelationManager
                                     return $users->pluck('name', 'id');
                                 }
 
-                            )->visible(fn($get) => $get('allocate_to') === 'Yes'),
+                            )->required(fn($get) => $get('allocate_to') === 'Yes')->visible(fn($get) => $get('allocate_to') === 'Yes'),
                             Textarea::make('note')->nullable()->visible(fn($get) => $get('allocate_to') === 'Yes'),
 
                         ])->action(function (StudentAdmission $record, array $data) {
@@ -273,7 +276,7 @@ class StudentAdmissionsRelationManager extends RelationManager
                             if (isset($data['allocated_user']) && !empty($data['allocated_user'])) {
                                 $record->allocated_user = $data['allocated_user'];
                             }
-                            $record->note = $data['note'];
+                            $record->note = @$data['note'];
                             $record->save();
 
                             $adData = [

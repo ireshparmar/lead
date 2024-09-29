@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -37,7 +38,6 @@ class CollegeApplicationRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('course_id')
-                    ->relationship('course')
                     ->required()
                     ->reactive()
                     ->afterStateUpdated(function (callable $set, $get) {
@@ -52,8 +52,7 @@ class CollegeApplicationRelationManager extends RelationManager
                         $set('fees', null);
                         $set('eligibility', null);
                     })
-                    ->options(function ($get, $livewire) {
-
+                    ->options(function ($get, $livewire, callable $set, $record) {
                         $degrees = Degree::whereHas('courses', function ($query) use ($livewire) {
                             $query->whereHas('interestedCourse', function ($subQuery) use ($livewire) {
                                 // Filter courses that are in StudentInterestedCourse for the selected student
@@ -74,9 +73,11 @@ class CollegeApplicationRelationManager extends RelationManager
                             });
                         }
 
-
                         $degrees = $degrees->pluck('name', 'id')
                             ->toArray();
+                        if ($livewire->mountedTableActions[0] == 'view') {
+                            $set('course_id',$record->degree_id);
+                        }
                         return $degrees;
                     }),
                 Forms\Components\Select::make('country_id')
@@ -122,12 +123,11 @@ class CollegeApplicationRelationManager extends RelationManager
                         ])->get();
                         if (!$course->isEmpty()) {
                             $set('degree_id', $course[0]->degree_id);
-                            $set('course_id', $course[0]->course_id);
+                            $set('selected_course_id', $course[0]->course_id);
                             $set('interested_course_id', $course[0]->id);
-                            $set('course_id', $course[0]->course_id);
                             $set('college_id', $course[0]->college_id);
                             $set('campus_id', $course[0]->campus_id);
-                            $set('min_eligibility', $course[0]->eligibility_id);
+                            $set('min_eligibility', $course[0]->min_eligibility);
                             $set('duration', $course[0]->duration);
                             $set('facility', $course[0]->facility);
                             $set('document', $course[0]->document);
@@ -147,6 +147,7 @@ class CollegeApplicationRelationManager extends RelationManager
                 // Only dehydrate (save) the value if it's not null,,
                 Forms\Components\Hidden::make('interested_course_id')->reactive(),
                 Forms\Components\Hidden::make('degree_id')->reactive(),
+                Forms\Components\Hidden::make('selected_course_id')->reactive(),
                 Forms\Components\Select::make('college_id')
                     ->disabled()
                     ->relationship('college', 'college_name')
@@ -172,6 +173,7 @@ class CollegeApplicationRelationManager extends RelationManager
                     ->disabled()
                     ->label('Min Eligibility')
                     ->nullable()
+                    ->reactive()
                     ->dehydrateStateUsing(function ($state) {
                         return $state;
                     }) // Force the value to be null when saving
@@ -263,7 +265,7 @@ class CollegeApplicationRelationManager extends RelationManager
                                     return $users->pluck('name', 'id');
                                 }
 
-                            )->visible(fn($get) => $get('allocate_to') === 'Yes'),
+                            )->required(fn($get) => $get('allocate_to') === 'Yes')->visible(fn($get) => $get('allocate_to') === 'Yes'),
                             Textarea::make('note')->nullable()->visible(fn($get) => $get('allocate_to') === 'Yes'),
 
                         ])->action(function (StudentCollegeApplication $record, array $data) {
@@ -352,5 +354,14 @@ class CollegeApplicationRelationManager extends RelationManager
                 //Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make()
             ]);
+    }
+
+    protected function configureCreateAction(CreateAction $action): void
+    {
+        parent::configureCreateAction($action);
+        $action->mutateFormDataUsing(function ($data) {
+            $data['course_id'] = $data['selected_course_id'];
+            return $data;
+        });
     }
 }

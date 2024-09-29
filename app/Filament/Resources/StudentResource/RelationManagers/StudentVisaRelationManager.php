@@ -139,7 +139,7 @@ class StudentVisaRelationManager extends RelationManager
                         ])->action(function (StudentVisa $record, array $data) {
                             $record->status = $data['status'];
                             $record->visa_done = $data['visa_done'];
-                            $record->note = $data['note'];
+                            $record->note = isset($data['note']) ? $data['note'] : '';
                             $record->save();
 
 
