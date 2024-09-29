@@ -275,7 +275,7 @@ class CollegeApplicationRelationManager extends RelationManager
                             if (isset($data['allocated_user']) && !empty($data['allocated_user'])) {
                                 $record->allocated_user = $data['allocated_user'];
                             }
-                            $record->note = $data['note'];
+                            $record->note = @$data['note'];
                             $record->save();
 
                             $admission  = new StudentAdmission();
