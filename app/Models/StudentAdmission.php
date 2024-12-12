@@ -85,6 +85,11 @@ class StudentAdmission extends Model
         return $this->belongsTo(Degree::class, 'degree_id');
     }
 
+    public function college_application()
+    {
+        return $this->belongsTo(StudentCollegeApplication::class, 'application_id');
+    }
+
     public function campus()
     {
         return $this->belongsTo(Campus::class);

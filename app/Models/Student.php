@@ -44,6 +44,17 @@ class Student extends Model
         'deleted_at',
     ];
 
+    protected $appends = ['full_name', 'full_name_with_enrollment'];
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+    }
+    public function getFullNameWithEnrollmentAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name . ' (' . $this->enrollment_number . ')';
+    }
+
     public function createdBy()
     {
         return $this->hasOne(User::class, 'id', 'created_by');
@@ -153,5 +164,10 @@ class Student extends Model
     public function studentPayments()
     {
         return $this->hasMany(StudentPaymentDetail::class); // Assuming StudentPaymentDetail model
+    }
+
+    public function commissions()
+    {
+        return $this->morphMany(Commission::class, 'commissionable');
     }
 }

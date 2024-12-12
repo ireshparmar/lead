@@ -35,6 +35,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DurationSeeder::class);
         $this->call(EntranceExamSeeder::class);
         $this->call(DocumentTypeSeeder::class);
-
+        $this->call(CurrencySeeder::class);
     }
 }
