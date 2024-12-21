@@ -257,7 +257,30 @@ return [
         'November' => 'November',
         'December' => 'December',
 
+    ],
+
+    'admission_by' => [
+        'Direct College' => 'Direct College',
+        'Refferal Portal' => 'Refferal Portal',
+    ],
+
+    'currency' => [
+        'CAD' => 'CAD', // Canadian Dollar - Canada
+        'AUD' => 'AUD', // Australian Dollar - Australia
+        'USD' => 'USD', // United States Dollar - United States
+        'MYR' => 'MYR', // Malaysian Ringgit - Malaysia
+        'AFN' => 'AFN', // Afghan Afghani - Afghanistan
+        'EUR' => 'EUR', // Euro - European Union
+        'GBP' => 'GBP', // British Pound - United Kingdom
+        'CHF' => 'CHF', // Swiss Franc - Switzerland
+        'SEK' => 'SEK', // Swedish Krona - Sweden
+        'NOK' => 'NOK', // Norwegian Krone - Norway
+        'DKK' => 'DKK', // Danish Krone - Denmark
+        'PLN' => 'PLN', // Polish Zloty - Poland
+        'HUF' => 'HUF', // Hungarian Forint - Hungary
+        'CZK' => 'CZK', // Czech Koruna - Czech Republic
     ]
+
 
 
 ];

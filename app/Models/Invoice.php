@@ -12,12 +12,34 @@ class Invoice extends Model
     protected $fillable = [
         'commission_id',
         'invoice_number',
-        'total_amount',
+        'agent_commission',
+        'own_commission',
         'status',
         'remarks',
         'created_by',
         'updated_by',
+        'base_currency',
+        'base_currency_rate',
+        'payment_currency',
+        'payment_date',
+        'invoice_type',
+        'agent_payment_date',
+        'agent_payment_status',
+        'agent_payment_status_updated_by',
+        'agent_payment_remarks'
+
+
     ];
+
+    public function getOwnCommissionInBaseCurrencyAttribute()
+    {
+        return $this->own_commission;
+    }
+
+    public function getAgentCommissionInBaseCurrencyAttribute()
+    {
+        return $this->agent_commission;
+    }
 
     /**
      * Belongs-to relationship with Commission.
@@ -25,5 +47,15 @@ class Invoice extends Model
     public function commission()
     {
         return $this->belongsTo(Commission::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

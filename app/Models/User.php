@@ -49,12 +49,14 @@ class User extends Authenticatable
         ];
     }
 
-    public function canAccessFilament(){
+    public function canAccessFilament()
+    {
         return $this->hasRole('Admin');
     }
 
 
-
-
-
+    public function agent_docs()
+    {
+        return $this->hasMany(AgentDoc::class, 'agent_id', 'id');
+    }
 }

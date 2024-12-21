@@ -32,7 +32,7 @@ class LeadCommissionResource extends Resource
 
     protected static ?string $navigationGroup = 'Commissions';
 
-    protected static ?string $label = 'Lead Commissions';
+    protected static ?string $label = 'Add Lead Commissions';
 
     public static function form(Form $form): Form
     {

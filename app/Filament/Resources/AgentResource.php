@@ -9,8 +9,10 @@ use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\Agent;
 use App\Models\User;
 use Carbon\Carbon;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class AgentResource extends Resource
@@ -30,6 +33,7 @@ class AgentResource extends Resource
     protected static ?string $navigationLabel = 'Agents';
 
     protected static ?string $modelLabel = 'Agents';
+
 
     public static function form(Form $form): Form
     {
@@ -44,24 +48,42 @@ class AgentResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->mutateDehydratedStateUsing(fn($state)=> Hash::make($state))
+                    ->mutateDehydratedStateUsing(fn($state) => Hash::make($state))
                     ->dehydrated(fn($state) => filled($state))
                     ->required(fn(Page $livewire) => ($livewire instanceof CreateAgent))
                     ->maxLength(255),
-                    Forms\Components\Select::make('status')
+                Forms\Components\Select::make('status')
                     ->options([
                         'Active' => 'Active',
                         'Inactive' => 'Inactive'
                     ])->required()->preload(),
                 Forms\Components\Select::make('roles')
-                    ->relationship('roles','name',function($query){
+                    ->relationship('roles', 'name', function ($query) {
                         $query->where('name', 'Agent');
-                    }) ->default(function () {
+                    })->default(function () {
                         return Role::where('name', 'Agent')->first()->id ?? null; // Set the default to the first active role or null if none found
                     })->preload(),
                 Forms\Components\Select::make('permissions')
                     ->multiple()
-                    ->relationship('permissions','name')->preload(),
+                    ->relationship('permissions', 'name')->preload(),
+
+                Forms\Components\FileUpload::make('agent_docs')
+                    ->label('Documents')
+                    ->multiple()
+                    ->downloadable()
+                    ->directory(config('app.UPLOAD_DIR') . '/agentDocs')
+                    ->openable()
+                    ->reactive()
+                    ->previewable(true)
+                    ->storeFileNamesIn('doc_org_name')
+                    ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                    ->afterStateHydrated(function (Set $set, $record) {
+                        // Load uploaded files from the `agent_documents` table
+                        if ($record) {
+                            $set('agent_docs', $record->agent_docs->pluck('doc_name')->toArray());
+                        }
+                        return [];
+                    }),
             ]);
     }
 
@@ -75,15 +97,15 @@ class AgentResource extends Resource
                     ->searchable(),
                 Tables\Columns\ToggleColumn::make('status')
                     ->updateStateUsing(function (User $record, $state) {
-                                if($state){
-                                    $record->status = 'Active';
-                                } else {
-                                    $record->status = 'Inactive';
-                                }
-                                $record->save();
-                    })->getStateUsing( function (User $record){
+                        if ($state) {
+                            $record->status = 'Active';
+                        } else {
+                            $record->status = 'Inactive';
+                        }
+                        $record->save();
+                    })->getStateUsing(function (User $record) {
                         return $record->status == 'Active' ? 1 : 0;
-                     }),
+                    }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -101,13 +123,13 @@ class AgentResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\Action::make('addExpense')
-                    ->icon('heroicon-s-currency-rupee')
-                    ->label('Add Expense')
-                    ->url(fn (User $record) => route('filament.admin.resources.expenses.create', ['agent_id' => $record->id])),
+                        ->icon('heroicon-s-currency-rupee')
+                        ->label('Add Expense')
+                        ->url(fn(User $record) => route('filament.admin.resources.expenses.create', ['agent_id' => $record->id])),
                     Tables\Actions\Action::make('addExpense')
-                    ->icon('heroicon-s-list-bullet')
-                    ->label('View Expenses')
-                    ->url(fn (User $record) => route('filament.admin.resources.expenses.index', ['agent_id' => $record->id])),
+                        ->icon('heroicon-s-list-bullet')
+                        ->label('View Expenses')
+                        ->url(fn(User $record) => route('filament.admin.resources.expenses.index', ['agent_id' => $record->id])),
                 ])
 
             ])
@@ -116,12 +138,13 @@ class AgentResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn (Builder $query) =>
+            ->modifyQueryUsing(
+                fn(Builder $query) =>
                 $query->whereHas('roles', function ($query) {
                     $query->where('name', 'Agent');
-             })
+                })
 
-          );
+            );
     }
 
     public static function getRelations(): array
@@ -137,7 +160,7 @@ class AgentResource extends Resource
             'index' => Pages\ListAgents::route('/'),
             'create' => Pages\CreateAgent::route('/create'),
             'edit' => Pages\EditAgent::route('/{record}/edit'),
-          //  'add-expense' => Pages\AddExpense::route('/{record}/add-expense'),
+            //  'add-expense' => Pages\AddExpense::route('/{record}/add-expense'),
 
         ];
     }

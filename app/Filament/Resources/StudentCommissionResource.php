@@ -35,7 +35,7 @@ class StudentCommissionResource extends Resource
 
     protected static ?string $navigationGroup = 'Commissions';
 
-    protected static ?string $label = 'Student Commissions';
+    protected static ?string $label = 'Add Student Commissions';
 
 
     public static function form(Form $form): Form
@@ -318,10 +318,7 @@ class StudentCommissionResource extends Resource
                             }),
                         Forms\Components\Select::make('admission_by')
                             ->label('Admission By')
-                            ->options([
-                                'Direct College' => 'Direct College',
-                                'Refferal Portal' => 'Refferal Portal',
-                            ])
+                            ->options(config('app.admission_by'))
                             ->required(),
                         Forms\Components\TextInput::make('remarks')->label('Remarks'),
                         Forms\Components\TextInput::make('own_commission')

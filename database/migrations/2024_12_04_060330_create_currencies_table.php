@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
-            $table->string('currency_unit')->unique(); // e.g., 1 USD, 1 CAD
+            $table->string('currency_unit'); // e.g., 1 USD, 1 CAD
             $table->string('currency')->unique(); // Currency code (e.g., USD, CAD)
             $table->decimal('base_currency_rate', 10, 4); // Conversion rate to base currency
             $table->string('base_currency'); // Base currency code (e.g., INR)
