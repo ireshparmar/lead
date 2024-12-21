@@ -23,7 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'email_verified_at',
-        'status'
+        'status',
+        'agent_docs'
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
         return [
             //'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'agent_docs' => 'array'
         ];
     }
 
@@ -55,8 +57,8 @@ class User extends Authenticatable
     }
 
 
-    public function agent_docs()
-    {
-        return $this->hasMany(AgentDoc::class, 'agent_id', 'id');
-    }
+    // public function agent_docs()
+    // {
+    //     return $this->hasMany(AgentDoc::class, 'agent_id', 'id');
+    // }
 }

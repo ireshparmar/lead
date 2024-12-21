@@ -76,7 +76,7 @@ class CollegeApplicationRelationManager extends RelationManager
                         $degrees = $degrees->pluck('name', 'id')
                             ->toArray();
                         if ($livewire->mountedTableActions[0] == 'view') {
-                            $set('course_id',$record->degree_id);
+                            $set('course_id', $record->degree_id);
                         }
                         return $degrees;
                     }),
@@ -257,7 +257,7 @@ class CollegeApplicationRelationManager extends RelationManager
                                 ->required(),
                             Select::make('is_move_to_admission')->options(['Yes' => 'Yes', 'No' => 'No'])->required(),
                             Select::make('allocate_to')->options(['Yes' => 'Yes', 'No' => 'No'])->required()->reactive(),
-                            Select::make('allocated_user')->label('Allocate To')->options(
+                            Select::make('allocated_user')->label('User')->options(
                                 function () {
                                     $users = \App\Models\User::where('status', 'Active')->whereHas('roles', function ($query) {
                                         $query->whereIn('name', ['Admin', 'Staff']);

@@ -39,6 +39,11 @@ class StudentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Students';
+
+    protected static ?string $label = 'Students';
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -341,9 +346,9 @@ class StudentResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make(),
-                    Action::make('detail')
-                        ->icon('heroicon-o-document-magnifying-glass')
-                        ->url(fn($record) => route('filament.admin.resources.students.detail', $record->id)),
+                    // Action::make('detail')
+                    //     ->icon('heroicon-o-document-magnifying-glass')
+                    //     ->url(fn($record) => route('filament.admin.resources.students.detail', $record->id)),
                 ])
             ]);
     }

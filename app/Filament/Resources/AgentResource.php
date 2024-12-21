@@ -76,14 +76,7 @@ class AgentResource extends Resource
                     ->reactive()
                     ->previewable(true)
                     ->storeFileNamesIn('doc_org_name')
-                    ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
-                    ->afterStateHydrated(function (Set $set, $record) {
-                        // Load uploaded files from the `agent_documents` table
-                        if ($record) {
-                            $set('agent_docs', $record->agent_docs->pluck('doc_name')->toArray());
-                        }
-                        return [];
-                    }),
+                    ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png']),
             ]);
     }
 
@@ -134,9 +127,9 @@ class AgentResource extends Resource
 
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ])
             ->modifyQueryUsing(
                 fn(Builder $query) =>

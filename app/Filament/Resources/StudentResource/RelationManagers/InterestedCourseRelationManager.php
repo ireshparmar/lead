@@ -86,7 +86,6 @@ class InterestedCourseRelationManager extends RelationManager
                         $course = \App\Models\Course::find($get('course_id'));
                         if ($course) {
                             $set('degree_id', $course->degree_id);
-
                         }
                     })
                     ->options(function ($get) {
@@ -270,7 +269,7 @@ class InterestedCourseRelationManager extends RelationManager
                             Select::make('status')->options(config('app.interestedCourseStatus'))->required(),
                             Select::make('is_move_to_application')->label('Move To Application')->options(['Yes' => 'Yes', 'No' => 'No'])->required(),
                             Select::make('allocate_to')->options(['Yes' => 'Yes', 'No' => 'No'])->reactive(),
-                            Select::make('allocated_user')->label('Allocate To')->options(
+                            Select::make('allocated_user')->label('User')->options(
                                 function () {
                                     $users = \App\Models\User::where('status', 'Active')->whereHas('roles', function ($query) {
                                         $query->whereIn('name', ['Admin', 'Staff']);

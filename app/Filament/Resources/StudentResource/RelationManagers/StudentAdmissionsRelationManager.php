@@ -77,9 +77,9 @@ class StudentAdmissionsRelationManager extends RelationManager
 
                         $degrees = $degrees->pluck('name', 'id')
                             ->toArray();
-                            if ($livewire->mountedTableActions[0] == 'view') {
-                                $set('course_id',$record->degree_id);
-                            }
+                        if ($livewire->mountedTableActions[0] == 'view') {
+                            $set('course_id', $record->degree_id);
+                        }
                         return $degrees;
                     }),
                 Forms\Components\Select::make('country_id')
@@ -257,7 +257,7 @@ class StudentAdmissionsRelationManager extends RelationManager
                             Select::make('is_move_to_visa')->options(['Yes' => 'Yes', 'No' => 'No'])->required(),
                             Select::make('is_admission_done')->options(['Yes' => 'Yes', 'No' => 'No'])->required(),
                             Select::make('allocate_to')->options(['Yes' => 'Yes', 'No' => 'No'])->required()->reactive(),
-                            Select::make('allocated_user')->label('Allocate To')->options(
+                            Select::make('allocated_user')->label('User')->options(
                                 function () {
                                     $users = \App\Models\User::where('status', 'Active')->whereHas('roles', function ($query) {
                                         $query->whereIn('name', ['Admin', 'Staff']);
