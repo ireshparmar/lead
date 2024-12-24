@@ -15,7 +15,9 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component as Livewire;
 
 
@@ -24,6 +26,8 @@ class StudentPaymentDetailRelationManager extends RelationManager
     protected static string $relationship = 'studentPayments';
 
     protected static ?string $label = '';
+
+
 
     public function form(Form $form): Form
     {

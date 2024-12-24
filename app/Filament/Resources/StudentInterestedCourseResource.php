@@ -18,6 +18,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class StudentInterestedCourseResource extends Resource
 {
@@ -41,7 +42,14 @@ class StudentInterestedCourseResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('interestedCourse');
+
+                if (!Auth::user()->hasRole('Admin')) {
+                    $query->whereHas('interestedCourse', function (Builder $query) {
+                        $query->where('allocated_user', Auth::user()->id);
+                    });
+                } else {
+                    $query->whereHas('interestedCourse');
+                }
             })
             ->columns([
                 Tables\Columns\TextColumn::make('enrollment_number')->label('Enrollment Number')->searchable()->toggleable()->sortable(),

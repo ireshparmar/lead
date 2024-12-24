@@ -16,6 +16,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class StudentAddmissionResource extends Resource
 {
@@ -39,7 +40,13 @@ class StudentAddmissionResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                $query->whereHas('studentAdmissions');
+                if (!Auth::user()->hasRole('Admin')) {
+                    $query->whereHas('studentAdmissions', function (Builder $query) {
+                        $query->where('allocated_user', Auth::user()->id);
+                    });
+                } else {
+                    $query->whereHas('studentAdmissions');
+                }
             })
             ->columns([
                 Tables\Columns\TextColumn::make('enrollment_number')->label('Enrollment Number')->searchable()->toggleable()->sortable(),

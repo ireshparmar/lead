@@ -231,6 +231,12 @@ class CollegeApplicationRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+
+                if (!Auth::user()->hasRole('Admin')) {
+                    $query->where('allocated_user', Auth::user()->id);
+                }
+            })
             ->recordTitleAttribute('course.degree.name')
             ->columns([
                 Tables\Columns\TextColumn::make('app_number')->label('Application Number')->toggleable(),

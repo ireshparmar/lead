@@ -247,6 +247,12 @@ class InterestedCourseRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+
+                if (!Auth::user()->hasRole('Admin')) {
+                    $query->where('allocated_user', Auth::user()->id);
+                }
+            })
             ->recordTitleAttribute('course.degree.name')
             ->columns([
                 Tables\Columns\TextColumn::make('country.name')->sortable()->toggleable(),
@@ -304,6 +310,7 @@ class InterestedCourseRelationManager extends RelationManager
                             $clApplication  = new StudentCollegeApplication();
                             $clData = [
                                 'interested_course_id' => $record->id,
+                                'degree_id' => $record->degree_id,
                                 'student_id' => $record->student_id,
                                 'country_id' => $record->country_id,
                                 'course_id' => $record->course_id,
