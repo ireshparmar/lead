@@ -140,7 +140,6 @@ class GenerateStudentInvoiceResource extends Resource
                     ->action(function (Collection $records) {
                         if (!empty($records)) {
                             foreach ($records as $record) {
-
                                 $record->status = 'Invoice Generated';
                                 $record->save();
 
@@ -165,7 +164,7 @@ class GenerateStudentInvoiceResource extends Resource
                                         'own_commission' => $ownCommission,
                                         'base_currency' => config('app.base_currency'),
                                         'base_currency_rate' => $record->base_currency_rate,
-                                        'payment_currency' => $record->lead->country[0]['currency'],
+                                        'payment_currency' => $record->student->studentAdmissions->first()->fees_currency,
                                         'created_by' => auth()->user()->id,
                                         'invoice_type' => 'student',
 
