@@ -332,61 +332,61 @@ class LeadResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make()->visible(!auth()->user()->hasRole('Agent')),
                     Tables\Actions\DeleteAction::make()->visible(fn($record) => ((Auth::user()->hasRole('Admin') || $record->created_by ===  Auth::user()->id) && !auth()->user()->hasRole('Agent'))),
-                    Action::make('payments')->form([
-                        Repeater::make('payments')
-                            ->label('')
-                            ->relationship()
-                            ->maxItems(3)
-                            ->schema([
-                                Forms\Components\TextInput::make('amount')
-                                    ->numeric()
-                                    ->inputMode('decimal')
-                                    ->required()
-                                    ->live()
-                                    ->rules([
-                                        fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
-                                            $leadId = $get('lead_id') ?? null;
-                                            if ($leadId) {
-                                                $lead = Lead::find($leadId);
-                                                if ($lead) {
-                                                    // Existing payments from the database
-                                                    $totalPaid = 0;
+                    // Action::make('payments')->form([
+                    //     Repeater::make('payments')
+                    //         ->label('')
+                    //         ->relationship()
+                    //         ->maxItems(3)
+                    //         ->schema([
+                    //             Forms\Components\TextInput::make('amount')
+                    //                 ->numeric()
+                    //                 ->inputMode('decimal')
+                    //                 ->required()
+                    //                 ->live()
+                    //                 ->rules([
+                    //                     fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                    //                         $leadId = $get('lead_id') ?? null;
+                    //                         if ($leadId) {
+                    //                             $lead = Lead::find($leadId);
+                    //                             if ($lead) {
+                    //                                 // Existing payments from the database
+                    //                                 $totalPaid = 0;
 
-                                                    // New payments from the Repeater field
-                                                    $repeaterValues = $get('../../payments'); // Ensure 'payments' matches your Repeater field name
-                                                    if (!empty($repeaterValues)) {
-                                                        foreach ($repeaterValues as $item) {
-                                                            $totalPaid += $item['amount'];
-                                                        }
-                                                    }
-                                                    if (empty($lead->amount)) {
-                                                        $fail('Please update amount in lead before adding payment detail.');
-                                                    }
-                                                    // Debugging to ensure values are correct
-                                                    if ($totalPaid > $lead->amount && !empty($lead->amount)) {
-                                                        $fail('The total payments exceed the total amount defined in the lead.');
-                                                    }
-                                                }
-                                            }
-                                        },
-                                    ]),
-                                Forms\Components\DatePicker::make('payment_date')
-                                    ->required(),
+                    //                                 // New payments from the Repeater field
+                    //                                 $repeaterValues = $get('../../payments'); // Ensure 'payments' matches your Repeater field name
+                    //                                 if (!empty($repeaterValues)) {
+                    //                                     foreach ($repeaterValues as $item) {
+                    //                                         $totalPaid += $item['amount'];
+                    //                                     }
+                    //                                 }
+                    //                                 if (empty($lead->amount)) {
+                    //                                     $fail('Please update amount in lead before adding payment detail.');
+                    //                                 }
+                    //                                 // Debugging to ensure values are correct
+                    //                                 if ($totalPaid > $lead->amount && !empty($lead->amount)) {
+                    //                                     $fail('The total payments exceed the total amount defined in the lead.');
+                    //                                 }
+                    //                             }
+                    //                         }
+                    //                     },
+                    //                 ]),
+                    //             Forms\Components\DatePicker::make('payment_date')
+                    //                 ->required(),
 
 
-                            ])
-                            ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
-                                $data['user_id'] = auth()->id();
-                                return $data;
-                            })
-                            ->addActionLabel('Add payment')->orderable(false)->columns(2)
-                    ])->mountUsing(function (Forms\ComponentContainer $form, Model $record) {
-                        // Load existing payments data into the form
-                        $form->fill([
-                            'payments' => $record->payments->toArray(),
-                            'lead_id'  => $record->id
-                        ]);
-                    })->icon('heroicon-s-currency-rupee')
+                    //         ])
+                    //         ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
+                    //             $data['user_id'] = auth()->id();
+                    //             return $data;
+                    //         })
+                    //         ->addActionLabel('Add payment')->orderable(false)->columns(2)
+                    // ])->mountUsing(function (Forms\ComponentContainer $form, Model $record) {
+                    //     // Load existing payments data into the form
+                    //     $form->fill([
+                    //         'payments' => $record->payments->toArray(),
+                    //         'lead_id'  => $record->id
+                    //     ]);
+                    // })->icon('heroicon-s-currency-rupee')
 
 
                 ])

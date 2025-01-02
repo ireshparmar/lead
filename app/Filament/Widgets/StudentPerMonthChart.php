@@ -3,29 +3,25 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Lead;
+use App\Models\Student;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class LeadPerMonthChart extends ChartWidget
+class StudentPerMonthChart extends ChartWidget
 {
-    protected static ?string $heading = 'Leads Per Month';
+    protected static ?string $heading = 'Students Enrollment Per Month';
 
     protected static ?int $sort = 2;
 
     protected function getData(): array
     {
-        $query = Lead::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-            ->whereYear('created_at', date('Y'))
+        $query = Student::selectRaw('MONTH(enrollment_date) as month, COUNT(*) as count')
+            ->whereYear('enrollment_date', date('Y'))
             ->groupBy('month');
 
-        if (auth()->user()->hasRole('Agent')) {
-            $query->where(function ($query) {
-                $query->where('created_by', auth()->user()->id)
-                    ->orWhere('agent_id', auth()->user()->id);
-            });
-        }
 
-        $leadsCount = $query->get()
+
+        $studentsCount = $query->get()
             ->keyBy('month')
             ->map(function ($item) {
                 return $item->count;
@@ -34,13 +30,13 @@ class LeadPerMonthChart extends ChartWidget
 
         $data = [];
         for ($i = 1; $i <= 12; $i++) {
-            $data[] = $leadsCount[$i] ?? 0;
+            $data[] = $studentsCount[$i] ?? 0;
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Leads created (' . date('Y') . ')',
+                    'label' => 'Students enrolled (' . date('Y') . ')',
                     'data' => $data,
                 ],
             ],

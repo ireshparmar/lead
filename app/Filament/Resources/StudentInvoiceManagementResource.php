@@ -18,6 +18,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -108,6 +109,17 @@ class StudentInvoiceManagementResource extends Resource
             ->filters([
                 SelectFilter::make('status')->label('Status')
                     ->options(['Pending Payment' => 'Pending Payment', 'Commission Received' => 'Commission Received'])->multiple(),
+                Filter::make('payment_date')
+                    ->label('Payment Date')
+                    ->form([
+                        Forms\Components\DatePicker::make('payment_date_from')->label('Payment From'),
+                        Forms\Components\DatePicker::make('payment_date_to')->label('Payment To'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['payment_date_from'], fn($query) => $query->whereDate('payment_date', '>=', $data['payment_date_from']))
+                            ->when($data['payment_date_to'], fn($query) => $query->whereDate('payment_date', '<=', $data['payment_date_to']));
+                    }),
 
             ])
             ->actions([

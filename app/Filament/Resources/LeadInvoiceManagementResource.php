@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Filters\Filter;
 
 class LeadInvoiceManagementResource extends Resource
 {
@@ -43,7 +45,7 @@ class LeadInvoiceManagementResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
+            ->modifyQueryUsing(function (Builder $query, Table $table) {
                 $query->where('invoice_type', 'lead')->with(['commission.lead.country', 'createdBy', 'commission.agent']);
             })
             ->columns([
@@ -87,6 +89,18 @@ class LeadInvoiceManagementResource extends Resource
                 SelectFilter::make('status')->label('Own Commission Status')
                     ->options(['Pending Payment' => 'Pending Payment', 'Commission Received' => 'Commission Received'])->multiple(),
 
+                Filter::make('payment_date')
+                    ->label('Payment Date')
+                    ->form([
+                        Forms\Components\DatePicker::make('payment_date_from')->label('Payment From'),
+                        Forms\Components\DatePicker::make('payment_date_to')->label('Payment To'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['payment_date_from'], fn($query) => $query->whereDate('payment_date', '>=', $data['payment_date_from']))
+                            ->when($data['payment_date_to'], fn($query) => $query->whereDate('payment_date', '<=', $data['payment_date_to']));
+                    }),
+
             ])
             ->actions([
                 //Tables\Actions\EditAction::make(),
@@ -97,6 +111,7 @@ class LeadInvoiceManagementResource extends Resource
                 // ]),
             ]);
     }
+
 
     public static function getRelations(): array
     {

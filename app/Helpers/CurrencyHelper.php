@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Currency;
+use NumberFormatter;
 
 class CurrencyHelper
 {
@@ -42,5 +43,14 @@ class CurrencyHelper
     public static function findBaseCurrencyRate($currency)
     {
         return Currency::where('currency', $currency)->first()->base_currency_rate ?? 1;
+    }
+
+    public static function formatAmount($amount)
+    {
+        $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
+        if ($amount >= 1000) {
+            return $formatter->format($amount / 1000) . 'K';
+        }
+        return $formatter->format($amount);
     }
 }
